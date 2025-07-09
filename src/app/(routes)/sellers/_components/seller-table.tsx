@@ -28,7 +28,6 @@ import {
 } from "@/components/ui/table";
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
-import { ProductsTableActionBar } from "./table-action-bar";
 import { SellerWithProps } from "@/types";
 import { DataTableDateFilter } from "@/components/data-table/data-table-date-filter";
 
@@ -77,7 +76,6 @@ export function SellerTable<TValue>({
 
   return (
     <div>
-      <ProductsTableActionBar table={table} />
       <div className="flex items-center py-4">
         <Input
           placeholder="Search a vendor name or ID"

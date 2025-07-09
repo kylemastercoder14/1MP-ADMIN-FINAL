@@ -2,11 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckIcon, ChevronsUpDown, CopyIcon, EyeIcon } from "lucide-react";
+import { CheckIcon, ChevronsUpDown, CopyIcon } from "lucide-react";
 import { CellAction } from "./cell-action";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SellerWithProps } from "@/types";
 
@@ -73,7 +72,7 @@ export const columns: ColumnDef<SellerWithProps>[] = [
               title={row.original.id}
               className="text-xs cursor-pointer text-primary gap-2 flex items-center"
             >
-              <span className="w-[190px] hover:underline truncate overflow-hidden whitespace-nowrap">
+              <span className="w-[190px] truncate overflow-hidden whitespace-nowrap">
                 {row.original.id}
               </span>
               {copied ? (
@@ -91,22 +90,15 @@ export const columns: ColumnDef<SellerWithProps>[] = [
               )}
             </div>
           </div>
-          {/* Eye button */}
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() =>
-              window.open(`/products/${row.original.slug}`, "_blank")
-            }
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <EyeIcon className="size-4 text-primary" />
-          </Button>
         </div>
       );
     },
     filterFn: (row, columnId, filterValue) => {
-      const name = row.original.name.toLowerCase();
+      const owner =
+        `${row.original.givenName || ""} ${
+          row.original.familyName || ""
+        }`.trim() || "Unknown";
+      const name = owner.toLowerCase();
       const id = row.original.id.toLowerCase();
       const search = filterValue.toLowerCase();
 
@@ -233,7 +225,7 @@ export const columns: ColumnDef<SellerWithProps>[] = [
         default:
           return (
             <div className="bg-gray-200/30 inline-block text-gray-600 text-xs py-0.5 font-semibold rounded-sm px-2.5">
-              {row.original.adminApprovalStatus}
+              {row.original.adminApproval}
             </div>
           );
       }
