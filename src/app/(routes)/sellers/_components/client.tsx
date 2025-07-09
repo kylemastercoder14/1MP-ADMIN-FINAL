@@ -12,7 +12,7 @@ const Client = ({ data }: { data: SellerWithProps[] }) => {
   // ✅ Filter data based on status
   const filteredData = useMemo(() => {
 	if (activeTab === "all") return data;
-	return data.filter((item) => item.adminApprovalStatus === activeTab);
+	return data.filter((item) => item.adminApproval === activeTab);
   }, [data, activeTab]);
 
   // ✅ Count products by tab status
@@ -26,7 +26,7 @@ const Client = ({ data }: { data: SellerWithProps[] }) => {
 	};
 
 	for (const item of data) {
-	  const key = item.adminApprovalStatus as IItem["value"];
+	  const key = item.adminApproval as IItem["value"];
 	  if (counts[key] !== undefined) {
 		counts[key]++;
 	  }
