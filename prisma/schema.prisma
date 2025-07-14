@@ -227,12 +227,15 @@ model Product {
   shippingPolicy     String?
 
   // SEO and marketing
-  metaTitle       String?
-  metaDescription String?
-  tags            String[]
-  seoKeywords     String[]
-  isFeatured      Boolean  @default(false)
-  brand           String?
+  metaTitle               String?
+  metaDescription         String?
+  tags                    String[]
+  seoKeywords             String[]
+  isFeatured              Boolean  @default(false)
+  brand                   String?
+  onTimeDeliveryGuarantee Boolean  @default(false)
+  onSiteServiceGuarantee  Boolean  @default(false)
+  freeReplacementParts    Boolean  @default(false)
 
   // Policies
   warrantyDuration String? // e.g. "1 year", "6 months"
