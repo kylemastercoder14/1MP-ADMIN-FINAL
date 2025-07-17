@@ -45,8 +45,7 @@ model User {
 
 model Address {
   id            String  @id @default(cuid())
-  firstName     String
-  lastName      String
+  fullName      String
   contactNumber String
   homeAddress   String
   barangay      String
@@ -55,6 +54,7 @@ model Address {
   region        String
   zipCode       String
   isDefault     Boolean @default(false)
+  type          String // e.g., "Home", "Work", "Other"
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
