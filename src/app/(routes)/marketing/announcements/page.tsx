@@ -17,8 +17,8 @@ const Page = async () => {
 	<div>
 	  <div className="flex md:items-center items-start gap-3 md:flex-row flex-col justify-between mb-4">
 		<Heading
-		  title="Manage News and Announcements"
-		  description="Here you can manage all your news and announcements. You can create, edit, and delete announcements that will be visible to your users."
+		  title="Manage Announcements"
+		  description="Here you can manage all your announcements. You can create, edit, and delete announcements that will be visible to your users."
 		/>
 		<Link href="/marketing/announcements/create">
           <Button variant="primary" className='cursor-pointer'>

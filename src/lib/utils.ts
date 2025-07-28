@@ -23,3 +23,22 @@ export const formatPrice = (price: number) => {
     maximumFractionDigits: 2,
   });
 };
+
+export const ensureBlob = async (file: File | Blob): Promise<Blob> => {
+  // If it's already a Blob, return it directly
+  if (file instanceof Blob) {
+    return file;
+  }
+
+  // Convert File to Blob
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const blob = new Blob([reader.result as ArrayBuffer], {
+        type: (file as File).type,
+      });
+      resolve(blob);
+    };
+    reader.readAsArrayBuffer(file);
+  });
+};

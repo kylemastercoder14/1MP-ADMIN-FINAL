@@ -74,6 +74,10 @@ const data = {
           url: "/marketing/announcements",
         },
         {
+          title: "News Center",
+          url: "/marketing/news-center",
+        },
+        {
           title: "Campaigns",
           url: "/marketing/campaigns",
         },

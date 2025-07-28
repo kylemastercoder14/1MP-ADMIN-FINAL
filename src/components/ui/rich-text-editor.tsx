@@ -161,9 +161,10 @@ export function RichTextEditor({
             },
           ].map((btn, index) => (
             <Tooltip key={index}>
-              <TooltipTrigger asChild>
+              <TooltipTrigger asChild type='button'>
                 <Toggle
                   size="sm"
+                  type='button'
                   pressed={btn.active}
                   onPressedChange={btn.action}
                   disabled={disabled}
@@ -180,9 +181,10 @@ export function RichTextEditor({
           <Dialog open={linkDialogOpen} onOpenChange={setLinkDialogOpen}>
             <DialogTrigger asChild>
               <Tooltip>
-                <TooltipTrigger asChild>
+                <TooltipTrigger asChild type='button'>
                   <Toggle
                     size="sm"
+                    type='button'
                     pressed={editor.isActive("link")}
                     onPressedChange={() => {
                       const previousUrl =
@@ -218,10 +220,11 @@ export function RichTextEditor({
           <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
             <DialogTrigger asChild>
               <Tooltip>
-                <TooltipTrigger asChild>
+                <TooltipTrigger asChild type='button'>
                   <Button
                     variant="ghost"
                     size="sm"
+                    type='button'
                     className="h-8 px-2"
                     onClick={() => setImageDialogOpen(true)}
                     disabled={disabled}
@@ -254,6 +257,7 @@ export function RichTextEditor({
                 <Button
                   variant="ghost"
                   size="sm"
+                  type='button'
                   onClick={() => editor.chain().focus().undo().run()}
                   disabled={!editor.can().undo() || disabled}
                   className="h-8 px-2"
@@ -268,6 +272,7 @@ export function RichTextEditor({
                 <Button
                   variant="ghost"
                   size="sm"
+                  type='button'
                   onClick={() => editor.chain().focus().redo().run()}
                   disabled={!editor.can().redo() || disabled}
                   className="h-8 px-2"

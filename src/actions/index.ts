@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Product } from "@prisma/client";
 import { extractPathFromUrl } from "@/lib/utils";
 import z from "zod";
-import { NewsAnnouncementValidators } from "@/validators/admin";
+import { NewsAnnouncementValidators, NewsValidators } from "@/validators/admin";
 
 export async function signIn(email: string, password: string) {
   try {
@@ -419,5 +419,147 @@ export const updateLegalNotice = async (content: string) => {
   } catch (error) {
     console.error("Error updating legal notice:", error);
     return { error: "Failed to update legal notice" };
+  }
+};
+
+export const createNews = async (values: z.infer<typeof NewsValidators>) => {
+  const safeValues = NewsValidators.safeParse(values);
+
+  if (!safeValues.success) {
+    return { error: "Please fill all the required fields" };
+  }
+
+  const { title, category, thumbnail, type, sections } = safeValues.data;
+
+  try {
+    const data = await db.news.create({
+      data: {
+        title,
+        category,
+        thumbnail,
+        type,
+        sections: {
+          create: sections.map((section) => ({
+            heading: section.heading,
+            content: section.content,
+            anchorId: section.anchorId,
+            order: section.order,
+          })),
+        },
+      },
+    });
+
+    return { success: "News article created successfully", data };
+  } catch (error) {
+    console.error(error);
+    return { error: "An error occurred" };
+  }
+};
+
+export const updateNews = async (
+  values: z.infer<typeof NewsValidators>,
+  newsId: string
+) => {
+  const safeValues = NewsValidators.safeParse(values);
+
+  if (!safeValues.success) {
+    console.error("Validation error during news update:", safeValues.error);
+    // You might want to return safeValues.error.issues for more detailed client-side validation messages
+    return { error: "Invalid data provided. Please check all fields." };
+  }
+
+  const { title, category, thumbnail, type, status, sections } =
+    safeValues.data;
+
+  try {
+    const existingNews = await db.news.findUnique({
+      where: { id: newsId },
+      include: { sections: true },
+    });
+
+    if (!existingNews) {
+      return { error: "News article not found." };
+    }
+
+    // Prepare for batch operations on sections
+    const sectionsToCreate = sections.filter((section) => !section.id);
+
+    // Get IDs of sections that are in the incoming data
+    const incomingSectionIds = new Set(
+      sections.map((section) => section.id).filter(Boolean) // Filter out undefined/null for new sections
+    );
+
+    // Sections to delete: those in existingNews but not in incomingSectionIds
+    const sectionsToDeleteIds = existingNews.sections
+      .filter((existingSec) => !incomingSectionIds.has(existingSec.id))
+      .map((sec) => sec.id);
+
+    // Sections to update: those in the incoming data that also have an ID (i.e., are existing)
+    const sectionsToUpdate = sections.filter((section) => section.id);
+
+    const data = await db.news.update({
+      where: { id: newsId },
+      data: {
+        title,
+        category,
+        thumbnail,
+        type,
+        status,
+        sections: {
+          // Delete sections that are no longer present
+          deleteMany: {
+            id: {
+              in: sectionsToDeleteIds,
+            },
+          },
+          // Update existing sections
+          // Ensure that the id is always a string for the 'where' clause
+          updateMany: sectionsToUpdate.map((section) => ({
+            where: { id: section.id! }, // Use non-null assertion as we filtered for sections with IDs
+            data: {
+              heading: section.heading,
+              content: section.content,
+              order: section.order,
+              anchorId: section.anchorId,
+            },
+          })),
+          // Create new sections
+          create: sectionsToCreate.map((section) => ({
+            heading: section.heading,
+            content: section.content,
+            order: section.order,
+            anchorId: section.anchorId,
+          })),
+        },
+      },
+      include: { sections: true }, // Include sections in the response if needed
+    });
+
+    return { success: "News article updated successfully", data };
+  } catch (error) {
+    console.error("Error updating news article:", error);
+    // More specific error handling could be added here based on Prisma errors
+    return { error: "An error occurred while updating the news article." };
+  }
+};
+
+export const deleteNews = async (newsId: string) => {
+  try {
+    const existingNews = await db.news.findUnique({
+      where: { id: newsId },
+    });
+
+    if (!existingNews) {
+      return { error: "News article not found." };
+    }
+
+    const data = await db.news.delete({
+      where: { id: newsId },
+    });
+
+    return { success: "News article deleted successfully", data };
+  } catch (error) {
+    console.error("Error deleting news article:", error);
+    return { error: "An error occurred while deleting the news article." };
   }
 };

@@ -7,6 +7,8 @@ import {
   User,
   Order,
   Address,
+  News,
+  NewsSection,
 } from "@prisma/client";
 
 export interface CategoryWithProps extends Category {
@@ -27,4 +29,8 @@ export interface SellerWithProps extends Vendor {
 export interface CustomerWithOrder extends User {
   order: Order[];
   address?: Address[];
+}
+
+export interface NewsWithSections extends News {
+  sections: NewsSection[];
 }
