@@ -535,7 +535,7 @@ const NewsForm = ({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter the title of your announcement"
+                      placeholder="Enter the title of your news article"
                       {...field}
                     />
                   </FormControl>

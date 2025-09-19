@@ -3,17 +3,14 @@
 import {
   LogOutIcon,
   MoreVerticalIcon,
-  UserCircleIcon,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -129,14 +126,6 @@ export function UserMenu({
                   </div>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem role='button' onClick={() => router.push('/settings/account/general-information')}>
-                  <UserCircleIcon />
-                  Account
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setIsOpen(true)}>
                 <LogOutIcon />
                 Log out

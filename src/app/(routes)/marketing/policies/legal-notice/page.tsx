@@ -1,13 +1,15 @@
 import React from "react";
 import db from "@/lib/db";
-import LegalNoticeForm from "@/components/forms/legal-notice-form";
+import PolicyForm from "@/components/forms/policy-form";
 
 const Page = async () => {
   const data = await db.policies.findFirst();
   return (
     <div>
-      <LegalNoticeForm
+      <PolicyForm
         initialData={data}
+        fieldName="legalNotice"
+        title="Legal Notice"
       />
     </div>
   );

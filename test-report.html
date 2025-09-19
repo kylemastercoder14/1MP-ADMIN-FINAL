@@ -1,0 +1,277 @@
+<html><head><meta charset="utf-8"/><title>1MP Admin Test Report</title><style type="text/css">:root {
+  --text-primary: #111;
+  --text-secondary: #4f4f4f;
+  --success: #006633;
+  --success-bright: #80ffbf;
+  --danger: #cc071e;
+  --danger-bright: #fbdfe0;
+  --warning: #995c00;
+  --warning-bright: #ffeea8;
+  --panel: #eee;
+  --border: #949494;
+  --disabled: #6b6b6b;
+}
+
+html,
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  color: var(--text-primary);
+}
+body {
+  padding: 2rem 1rem;
+}
+.jesthtml-content {
+  margin: 0 auto;
+  max-width: 70rem;
+}
+header {
+  display: flex;
+  align-items: center;
+}
+#title {
+  margin: 0;
+  flex-grow: 1;
+}
+#logo {
+  height: 4rem;
+}
+#timestamp {
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+#metadata-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.additional-information-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+/** SUMMARY */
+#summary {
+  color: var(--text-primary);
+  display: flex;
+  font-family: monospace;
+  font-size: 1rem;
+}
+#summary > div {
+  margin-right: 0.5rem;
+  background: var(--panel);
+  padding: 1rem;
+  min-width: 15rem;
+}
+#summary > div:last-child {
+  margin-right: 0;
+}
+@media only screen and (max-width: 720px) {
+  #summary {
+    flex-direction: column;
+  }
+  #summary > div {
+    margin-right: 0;
+    margin-top: 1rem;
+  }
+  #summary > div:first-child {
+    margin-top: 0;
+  }
+}
+
+.summary-total {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.summary-passed {
+  color: var(--success);
+  border-left: 0.4rem solid var(--success);
+  padding-left: 0.5rem;
+  margin-bottom: 0.15rem;
+}
+.summary-failed,
+.summary-obsolete-snapshots {
+  color: var(--danger);
+  border-left: 0.4rem solid var(--danger);
+  padding-left: 0.5rem;
+  margin-bottom: 0.15rem;
+}
+.summary-pending {
+  color: var(--warning);
+  border-left: 0.4rem solid var(--warning);
+  padding-left: 0.5rem;
+  margin-bottom: 0.15rem;
+}
+.summary-empty {
+  color: var(--disabled);
+  border-left: 0.4rem solid var(--disabled);
+  margin-bottom: 0.15rem;
+}
+
+.test-result {
+  padding: 1rem;
+  margin-bottom: 0.25rem;
+}
+.test-result:last-child {
+  border: 0;
+}
+.test-result.passed {
+  background-color: var(--success-bright);
+  color: var(--success);
+}
+.test-result.failed {
+  background-color: var(--danger-bright);
+  color: var(--danger);
+}
+.test-result.pending {
+  background-color: var(--warning-bright);
+  color: var(--warning);
+}
+
+.test-info {
+  display: flex;
+  justify-content: space-between;
+}
+.test-suitename {
+  width: 20%;
+  text-align: left;
+  font-weight: bold;
+  word-break: break-word;
+}
+.test-title {
+  width: 40%;
+  text-align: left;
+  font-style: italic;
+}
+.test-status {
+  width: 20%;
+  text-align: right;
+}
+.test-duration {
+  width: 10%;
+  text-align: right;
+  font-size: 0.85rem;
+}
+
+.failureMessages {
+  padding: 0 1rem;
+  margin-top: 1rem;
+  border-top: 1px dashed var(--danger);
+}
+.failureMessages.suiteFailure {
+  border-top: none;
+}
+.failureMsg {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+.suite-container {
+  margin-bottom: 1rem;
+}
+.suite-info {
+  padding: 1rem;
+  background-color: var(--panel);
+  color: var(--text-secondary);
+  border: 0.15rem solid;
+  border-color: var(--panel);
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.suite-info:hover {
+  border-color: var(--border);
+  cursor: pointer;
+}
+.suite-info .suite-path {
+  word-break: break-all;
+  flex-grow: 1;
+  font-family: monospace;
+  font-size: 1rem;
+}
+.suite-info .suite-time {
+  margin-left: 1rem;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.85rem;
+}
+.suite-info .suite-time.warn {
+  background-color: var(--danger);
+  color: #fff;
+}
+.suite-info:before {
+  content: "\2303";
+  display: inline-block;
+  margin-right: 1rem;
+  transform: rotate(180deg) translateY(0.15rem);
+}
+.suite-container[open] .suite-info:before {
+  transform: rotate(0deg) translateY(0.15rem);
+}
+
+/* CONSOLE LOGS */
+.suite-consolelog {
+  margin-bottom: 0.25rem;
+  padding: 1rem;
+  background-color: var(--panel);
+}
+.suite-consolelog-header {
+  font-weight: bold;
+}
+.suite-consolelog-item {
+  padding: 0.5rem;
+}
+.suite-consolelog-item pre {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.suite-consolelog-item-origin {
+  color: var(--text-secondary);
+  font-weight: bold;
+}
+.suite-consolelog-item-message {
+  color: var(--text-primary);
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+
+/* OBSOLETE SNAPSHOTS */
+.suite-obsolete-snapshots {
+  margin-bottom: 0.25rem;
+  padding: 1rem;
+  background-color: var(--danger-bright);
+  color: var(--danger);
+}
+.suite-obsolete-snapshots-header {
+  font-weight: bold;
+}
+.suite-obsolete-snapshots-item {
+  padding: 0.5rem;
+}
+.suite-obsolete-snapshots-item pre {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.suite-obsolete-snapshots-item-message {
+  color: var(--text-primary);
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+</style></head><body><main class="jesthtml-content"><header><h1 id="title">1MP Admin Test Report</h1></header><section id="metadata-container"><div id="timestamp">Started: 2025-09-19 16:42:57</div><div id="summary"><div id="suite-summary"><div class="summary-total">Suites (6)</div><div class="summary-passed ">6 passed</div><div class="summary-failed  summary-empty">0 failed</div><div class="summary-pending  summary-empty">0 pending</div></div><div id="test-summary"><div class="summary-total">Tests (29)</div><div class="summary-passed ">29 passed</div><div class="summary-failed  summary-empty">0 failed</div><div class="summary-pending  summary-empty">0 pending</div></div></div></section><details id="suite-1" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">D:\Big Projects\1mp-admin-final\__tests__\api\admin.test.ts</div><div class="suite-time">2.004s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">GET /api/admin</div><div class="test-title">should return 401 if no Authorization header</div><div class="test-status">passed</div><div class="test-duration">0.044s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">GET /api/admin</div><div class="test-title">should return 401 if token is invalid</div><div class="test-status">passed</div><div class="test-duration">0.004s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">GET /api/admin</div><div class="test-title">should return 404 if admin not found</div><div class="test-status">passed</div><div class="test-duration">0.002s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">GET /api/admin</div><div class="test-title">should return 200 with admin details if found</div><div class="test-status">passed</div><div class="test-duration">0.005s</div></div></div></div></details><details id="suite-2" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">D:\Big Projects\1mp-admin-final\__tests__\lib\supabase\middleware.test.ts</div><div class="suite-time">2.021s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">middleware (updateSession)</div><div class="test-title">should allow public routes when no user</div><div class="test-status">passed</div><div class="test-duration">0.038s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">middleware (updateSession)</div><div class="test-title">should redirect to /sign-in if no user on protected route</div><div class="test-status">passed</div><div class="test-duration">0.003s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">middleware (updateSession)</div><div class="test-title">should allow access if user exists</div><div class="test-status">passed</div><div class="test-duration">0.003s</div></div></div></div></details><details id="suite-3" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">D:\Big Projects\1mp-admin-final\__tests__\home.test.tsx</div><div class="suite-time">2.174s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">Home Page</div><div class="test-title">renders redirecting text</div><div class="test-status">passed</div><div class="test-duration">0.091s</div></div></div></div></details><details id="suite-4" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">D:\Big Projects\1mp-admin-final\__tests__\lib\compose-ref.test.tsx</div><div class="suite-time">2.241s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">composeRefs</div><div class="test-title">should assign the same DOM node to multiple refs (object + callback)</div><div class="test-status">passed</div><div class="test-duration">0.06s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">composeRefs</div><div class="test-title">should handle undefined and null refs gracefully</div><div class="test-status">passed</div><div class="test-duration">0.006s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">composeRefs</div><div class="test-title">should support cleanup function when a ref callback returns a function</div><div class="test-status">passed</div><div class="test-duration">0.005s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">useComposedRefs</div><div class="test-title">should return a stable ref callback</div><div class="test-status">passed</div><div class="test-duration">0.043s</div></div></div></div></details><details id="suite-5" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">D:\Big Projects\1mp-admin-final\__tests__\lib\composition.test.tsx</div><div class="suite-time">2.285s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">composeEventHandlers</div><div class="test-title">should call both original and our handler</div><div class="test-status">passed</div><div class="test-duration">0.109s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">composeEventHandlers</div><div class="test-title">should not call our handler if defaultPrevented</div><div class="test-status">passed</div><div class="test-duration">0.008s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">composeEventHandlers</div><div class="test-title">should call our handler even if prevented when checkForDefaultPrevented = false</div><div class="test-status">passed</div><div class="test-duration">0.006s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">composeRefs</div><div class="test-title">should assign the same DOM node to multiple refs</div><div class="test-status">passed</div><div class="test-duration">0.013s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">composeRefs</div><div class="test-title">should support cleanup function when a ref callback returns a function</div><div class="test-status">passed</div><div class="test-duration">0.007s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">useComposedRefs</div><div class="test-title">should return a stable ref callback</div><div class="test-status">passed</div><div class="test-duration">0.006s</div></div></div></div></details><details id="suite-6" class="suite-container" open=""><summary class="suite-info"><div class="suite-path">D:\Big Projects\1mp-admin-final\__tests__\lib\utils.test.ts</div><div class="suite-time">2.438s</div></summary><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">merges class names correctly</div><div class="test-status">passed</div><div class="test-duration">0.035s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">extracts path from valid URL</div><div class="test-status">passed</div><div class="test-duration">0.003s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">returns null for invalid URL</div><div class="test-status">passed</div><div class="test-duration">0.004s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">formats price with two decimals</div><div class="test-status">passed</div><div class="test-duration">0.056s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">returns the same Blob if input is Blob</div><div class="test-status">passed</div><div class="test-duration">0.003s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">converts File to Blob</div><div class="test-status">passed</div><div class="test-duration">0.007s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">returns correct range for last7days</div><div class="test-status">passed</div><div class="test-duration">0.002s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">applies percentage and fixed discounts</div><div class="test-status">passed</div><div class="test-duration">0.001s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">never returns negative price</div><div class="test-status">passed</div><div class="test-duration">0.001s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">returns discounts for product with active promos</div><div class="test-status">passed</div><div class="test-duration">0.001s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename">Helpers</div><div class="test-title">returns empty discounts when none are active</div><div class="test-status">passed</div><div class="test-duration">0.002s</div></div></div></div></details></main></body></html>

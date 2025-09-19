@@ -13,11 +13,14 @@ const nextConfig: NextConfig = {
       "orangemagazine.ph",
       "images.unsplash.com",
       "img.kwcdn.com",
+      "images.pexels.com",
+      "s.alicdn.com",
     ],
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
+  devIndicators: false,
 };
 
 export default nextConfig;

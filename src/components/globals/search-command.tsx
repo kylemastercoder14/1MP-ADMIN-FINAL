@@ -7,16 +7,17 @@ import {
   LifeBuoy,
   LayoutDashboard,
   ShoppingBag,
-  Tag,
-  Wallet,
-  Package,
-  Percent,
-  ShoppingCart,
-  ArrowLeftRight,
-  WalletCards,
-  UserCog,
-  MessageSquare,
   User,
+  ChartColumnStacked,
+  LaptopMinimalCheck,
+  Sparkles,
+  Store,
+  Users,
+  Megaphone,
+  Newspaper,
+  TicketPercent,
+  Scale,
+  FileText,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -53,59 +54,34 @@ const SearchCommand = () => {
       path: "/dashboard",
     },
     {
+      name: "Manage Categories",
+      icon: ChartColumnStacked,
+      path: "/manage-categories",
+    },
+    {
       name: "Manage Products",
       icon: ShoppingBag,
       path: "/products",
     },
     {
-      name: "Product Rating",
-      icon: ShoppingBag,
-      path: "/products/ratings",
+      name: "Sellers",
+      icon: Store,
+      path: "/sellers",
     },
     {
-      name: "Promotions",
-      icon: Percent,
-      path: "/marketing/promotions",
+      name: "Customers",
+      icon: Users,
+      path: "/customers",
     },
     {
-      name: "Campaigns",
-      icon: Tag,
-      path: "/marketing/campaigns",
+      name: "Settings",
+      icon: Settings,
+      path: "/settings",
     },
     {
-      name: "Manage Orders",
-      icon: ShoppingCart,
-      path: "/orders",
-    },
-    {
-      name: "Cancellation",
-      icon: ArrowLeftRight,
-      path: "/orders/cancellation",
-    },
-    {
-      name: "Return & Refund",
-      icon: ArrowLeftRight,
-      path: "/orders/return-refund",
-    },
-    {
-      name: "Withdrawals",
-      icon: WalletCards,
-      path: "/finance/withdrawals",
-    },
-    {
-      name: "My Subscriptions",
-      icon: Wallet,
-      path: "/finance/subscriptions",
-    },
-    {
-      name: "Account Settings",
-      icon: UserCog,
-      path: "/settings/account",
-    },
-    {
-      name: "Chat Assistant",
-      icon: MessageSquare,
-      path: "/settings/chat-assistant",
+      name: "Feedbacks",
+      icon: FileText,
+      path: "/feedbacks",
     },
     {
       name: "Help Center",
@@ -116,14 +92,34 @@ const SearchCommand = () => {
 
   const quickActions = [
     {
-      name: "Create New Product",
-      icon: Package,
-      action: () => router.push("/products/create"),
+      name: "Product Approval",
+      icon: LaptopMinimalCheck,
+      action: () => router.push("/products/approval"),
     },
     {
-      name: "Check Balance",
-      icon: Wallet,
-      action: () => router.push("/finance/withdrawals"),
+      name: "Product Rating",
+      icon: Sparkles,
+      action: () => router.push("/products/rating"),
+    },
+    {
+      name: "Announcement",
+      icon: Megaphone,
+      action: () => router.push("/marketing/announcements"),
+    },
+    {
+      name: "News Center",
+      icon: Newspaper,
+      action: () => router.push("/marketing/news-center"),
+    },
+    {
+      name: "Campaigns",
+      icon: TicketPercent,
+      action: () => router.push("/marketing/campaigns"),
+    },
+    {
+      name: "Policies",
+      icon: Scale,
+      action: () => router.push("/marketing/policies"),
     },
   ];
 

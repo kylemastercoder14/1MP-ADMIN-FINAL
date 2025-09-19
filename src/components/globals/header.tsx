@@ -21,24 +21,38 @@ const Header = () => {
   const { admin, loading, user } = useAdminDetails();
   const { theme } = useTheme();
   const { isFullscreen, toggleFullscreen } = useFullscreen();
+
   return (
-    <header className="flex sticky inset-x-0 top-0 z-50 rounded-t-lg bg-white dark:bg-zinc-800 h-16 border-b shadow-sm shrink-0 items-center gap-2">
-      <div className="flex items-center gap-2 px-4">
+    <header className="flex sticky inset-x-0 top-0 z-50 rounded-t-lg bg-white dark:bg-zinc-800 h-16 border-b shadow-sm shrink-0 items-center justify-between px-4">
+      {/* Left Section */}
+      <div className="flex items-center gap-2">
         <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="mr-2 h-4" />
-        <SearchCommand />
+        <Separator orientation="vertical" className="hidden sm:block h-4" />
+
+        {/* Hide search on very small screens */}
+        <div className="hidden sm:block">
+          <SearchCommand />
+        </div>
       </div>
-      <div className="flex ml-auto items-center gap-2 pr-5">
-        <QuickLinks />
-        <Button title="View Site" size="icon" variant="ghost">
+
+      {/* Right Section */}
+      <div className="flex items-center gap-1 sm:gap-2">
+        {/* Hide QuickLinks on mobile */}
+        <div className="hidden md:block">
+          <QuickLinks />
+        </div>
+
+        <Button title="View Site" size="icon" variant="ghost" className="hidden sm:flex">
           <Chrome stroke={theme === "dark" ? "#fff" : "#111"} />
           <span className="sr-only">View Site</span>
         </Button>
+
         <Button
           size="icon"
           variant="ghost"
           onClick={toggleFullscreen}
           title={isFullscreen ? "Exit full screen" : "Enter full screen"}
+          className="hidden sm:flex"
         >
           {isFullscreen ? (
             <Minimize stroke={theme === "dark" ? "#fff" : "#111"} />
@@ -46,11 +60,14 @@ const Header = () => {
             <Expand stroke={theme === "dark" ? "#fff" : "#111"} />
           )}
         </Button>
+
         <Button size="icon" variant="ghost">
           <BellRing stroke={theme === "dark" ? "#fff" : "#111"} />
           <span className="sr-only">Notification</span>
         </Button>
+
         <ToggleMode />
+
         <UserMenu
           loading={loading}
           user={{

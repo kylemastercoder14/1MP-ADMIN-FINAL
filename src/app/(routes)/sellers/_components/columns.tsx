@@ -234,6 +234,6 @@ export const columns: ColumnDef<SellerWithProps>[] = [
   {
     accessorKey: "actions",
     header: "",
-    cell: ({ row }) => <CellAction id={row.original.id} />,
+    cell: ({ row }) => <CellAction status={row.original.adminApproval} id={row.original.id} />,
   },
 ];

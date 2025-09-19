@@ -6,31 +6,31 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import {
-  UserPlus,
-  PackagePlus,
+  Store,
+  LaptopMinimalCheck,
   TicketPercent,
-  FileText,
-  ListOrdered,
+  Scale,
+  LifeBuoy,
   Settings,
   ChevronDown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const quickLinks = [
-  { label: "Customers", icon: UserPlus, href: "/customers" },
-  { label: "Add Product", icon: PackagePlus, href: "/products/create" },
+  { label: "Sellers", icon: Store, href: "/sellers" },
+  { label: "Product Approval", icon: LaptopMinimalCheck, href: "/products/approval" },
   {
-    label: "Add Coupon",
+    label: "Campaigns",
     icon: TicketPercent,
-    href: "/marketing/promotions/seller-coupon/create",
+    href: "/marketing/campaigns",
   },
   {
-    label: "Add Policies",
-    icon: FileText,
-    href: "/settings/account/policies/create",
+    label: "Policies",
+    icon: Scale,
+    href: "/marketing/policies",
   },
-  { label: "All Orders", icon: ListOrdered, href: "/orders" },
-  { label: "Site Settings", icon: Settings, href: "/settings/account" },
+  { label: "Help Center", icon: LifeBuoy, href: "/marketing/help-center" },
+  { label: "Site Settings", icon: Settings, href: "/settings" },
 ];
 
 const QuickLinks = () => {

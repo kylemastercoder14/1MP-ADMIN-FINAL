@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckIcon, ChevronsUpDown, CopyIcon } from "lucide-react";
+import { BadgeCheck, CheckIcon, ChevronsUpDown, CopyIcon } from "lucide-react";
 import { CellAction } from "./cell-action";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -61,6 +61,9 @@ export const columns: ColumnDef<CustomerWithOrder>[] = [
             <div className="flex items-center gap-2">
               <div className="w-[200px] truncate flex items-center gap-1">
                 {fullName}
+                {row.original.isEmailVerified && (
+                  <BadgeCheck className="size-3 text-white" fill="green" />
+                )}
               </div>
             </div>
             <div
@@ -201,7 +204,7 @@ export const columns: ColumnDef<CustomerWithOrder>[] = [
     },
   },
   {
-    accessorKey: "isVerified",
+    accessorKey: "isActive",
     header: ({ column }) => {
       return (
         <span
@@ -214,23 +217,23 @@ export const columns: ColumnDef<CustomerWithOrder>[] = [
       );
     },
     cell: ({ row }) => {
-      switch (row.original.isEmailVerified) {
+      switch (row.original.isActive) {
         case true:
           return (
             <div className="bg-green-200/30 inline-block text-green-600 text-xs py-0.5 font-semibold rounded-sm px-2.5">
-              Verified
+              Active
             </div>
           );
         case false:
           return (
             <div className="bg-red-200/30 inline-block text-red-600 text-xs py-0.5 font-semibold rounded-sm px-2.5">
-              Not Verified
+              Not Active
             </div>
           );
         default:
           return (
             <div className="bg-gray-200/30 inline-block text-gray-600 text-xs py-0.5 font-semibold rounded-sm px-2.5">
-              {row.original.isEmailVerified}
+              {row.original.isActive}
             </div>
           );
       }
@@ -239,6 +242,8 @@ export const columns: ColumnDef<CustomerWithOrder>[] = [
   {
     accessorKey: "actions",
     header: "",
-    cell: ({ row }) => <CellAction id={row.original.id} />,
+    cell: ({ row }) => (
+      <CellAction isActive={row.original.isActive} id={row.original.id} />
+    ),
   },
 ];

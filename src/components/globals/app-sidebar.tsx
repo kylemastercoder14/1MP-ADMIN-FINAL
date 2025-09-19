@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   ShoppingBag,
   Tag,
-  Settings,
   ChartColumnStacked,
   Users,
   FileText,
@@ -86,11 +85,6 @@ const data = {
           url: "/marketing/policies",
         },
       ],
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings,
     },
     {
       title: "Help Center",

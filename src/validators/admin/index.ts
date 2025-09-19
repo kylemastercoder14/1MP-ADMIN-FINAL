@@ -22,7 +22,7 @@ export const NewsAnnouncementValidators = z.object({
   images: z.array(z.string()).min(1, "At least one image is required"),
 });
 
-export const LegalNoticeValidators = z.object({
+export const PolicyValidators = z.object({
   content: z.string().min(1, { message: "Content is required" }),
 });
 
@@ -92,3 +92,39 @@ export const NewsValidators = z.object({
       }
     ),
 });
+
+export const CampaignValidators = z
+  .object({
+    title: z.string().min(1, { message: "Title is required" }),
+    details: z.string().min(1, { message: "Details is required" }),
+    criteria: z.string().min(1, { message: "Criteria is required" }),
+    campaignStartDate: z.date().min(new Date(), {
+      message: "Campaign start date must be in the future",
+    }),
+    campaignEndDate: z.date(),
+    registrationStartDate: z.date().min(new Date(), {
+      message: "Registration start date must be in the future",
+    }),
+    registrationEndDate: z.date(),
+    type: z.string().min(1, { message: "Type is required" }),
+    value: z.coerce.number().min(1, { message: "Value is required" }),
+    images: z.array(z.string()).min(1, "At least one image is required"),
+    banner: z.string().min(1, { message: "Banner is required" }),
+  })
+  .refine((data) => data.campaignEndDate > data.campaignStartDate, {
+    message: "Campaign end date must be after start date",
+    path: ["campaignEndDate"],
+  })
+  .refine((data) => data.registrationEndDate > data.registrationStartDate, {
+    message: "Registration end date must be after start date",
+    path: ["registrationEndDate"],
+  })
+  .refine(
+    (data) =>
+      data.registrationStartDate >= data.campaignStartDate &&
+      data.registrationEndDate <= data.campaignEndDate,
+    {
+      message: "Registration period must fall within the campaign period",
+      path: ["registrationStartDate"],
+    }
+  );

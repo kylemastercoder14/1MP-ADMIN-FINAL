@@ -26,17 +26,25 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Pencil, Save, X } from "lucide-react";
 import { Policies } from "@prisma/client";
-import { LegalNoticeValidators } from "@/validators/admin";
-import { updateLegalNotice } from "@/actions";
+import { PolicyValidators } from "@/validators/admin";
+import { updatePolicy } from "@/actions";
 
-const LegalNoticeForm = ({ initialData }: { initialData: Policies | null }) => {
+const PolicyForm = ({
+  initialData,
+  fieldName,
+  title,
+}: {
+  initialData: Policies | null;
+  fieldName: keyof Policies;
+  title: string;
+}) => {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
 
-  const form = useForm<z.infer<typeof LegalNoticeValidators>>({
-    resolver: zodResolver(LegalNoticeValidators),
+  const form = useForm<z.infer<typeof PolicyValidators>>({
+    resolver: zodResolver(PolicyValidators),
     defaultValues: {
-      content: initialData?.legalNotice || "",
+      content: initialData ? (initialData[fieldName] as string) || "" : "",
     },
   });
 
@@ -49,24 +57,24 @@ const LegalNoticeForm = ({ initialData }: { initialData: Policies | null }) => {
   const handleCancelEdit = () => {
     setEditing(false);
     form.reset({
-      content: initialData?.legalNotice || "",
+      content: initialData ? (initialData[fieldName] as string) || "" : "",
     });
   };
 
-  async function onSubmit(values: z.infer<typeof LegalNoticeValidators>) {
+  async function onSubmit(values: z.infer<typeof PolicyValidators>) {
     try {
-      const { error } = await updateLegalNotice(values.content);
+      const { error } = await updatePolicy(fieldName, values.content);
 
       if (error) {
         toast.error(error);
       }
 
-      toast.success("Legal notice updated successfully");
+      toast.success(`${title} updated successfully`);
       setEditing(false);
       router.refresh();
     } catch (error: any) {
       console.error(error);
-      toast.error(error.message || "Failed to update legal notice");
+      toast.error(error.message || `Failed to update ${title}`);
     }
   }
 
@@ -75,9 +83,7 @@ const LegalNoticeForm = ({ initialData }: { initialData: Policies | null }) => {
       <Card className="shadow-sm">
         <CardHeader className="border-b">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold">
-              Legal Notice
-            </CardTitle>
+            <CardTitle className="text-lg font-semibold">{title}</CardTitle>
 
             {!editing && (
               <Button
@@ -116,7 +122,7 @@ const LegalNoticeForm = ({ initialData }: { initialData: Policies | null }) => {
                             <RichTextEditor
                               value={field.value ?? ""}
                               onChangeAction={field.onChange}
-                              placeholder="Enter the legal notice content"
+                              placeholder={`Enter ${title} content...`}
                               disabled={isSubmitting}
                             />
                           </FormControl>
@@ -147,15 +153,15 @@ const LegalNoticeForm = ({ initialData }: { initialData: Policies | null }) => {
                   </div>
                 ) : (
                   <div className="prose prose-sm gap-5 max-w-none dark:prose-invert">
-                    {initialData?.legalNotice ? (
+                    {initialData?.[fieldName] ? (
                       <div
                         dangerouslySetInnerHTML={{
-                          __html: initialData.legalNotice,
+                          __html: initialData[fieldName] as string,
                         }}
                       />
                     ) : (
                       <div className="text-muted-foreground italic">
-                        No legal notice provided.
+                        No {title} provided.
                       </div>
                     )}
                   </div>
@@ -169,4 +175,4 @@ const LegalNoticeForm = ({ initialData }: { initialData: Policies | null }) => {
   );
 };
 
-export default LegalNoticeForm;
+export default PolicyForm;

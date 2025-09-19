@@ -50,9 +50,7 @@ export function NavMain({
                   }`}
                 >
                   <a href={item.url}>
-                    <item.icon
-                      fill={pathname === item.url ? "#777" : "transparent"}
-                    />
+                    <item.icon />
                     {item.title}
                   </a>
                 </SidebarMenuButton>
@@ -81,7 +79,7 @@ export function NavMain({
                         : "rounded-none hover:bg-sidebar-accent"
                     }`}
                   >
-                    <item.icon fill={shouldBeOpen ? "#777" : "transparent"} />
+                    <item.icon />
                     {item.title}{" "}
                     <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
                     <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />

@@ -35,6 +35,8 @@ model User {
   gender          String?
   dateOfBirth     String?
 
+  isActive Boolean @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -48,6 +50,7 @@ model User {
   invoiceInfo  InvoiceInfo[]
   conversation Conversation[]
   followStore  FollowStore[]
+  ticket       Ticket[]
 }
 
 model Address {
@@ -100,8 +103,8 @@ model Vendor {
 
   businessType String? // Food, NonFood, Service, Digital
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   lastActiveAt DateTime?
 
   categorySlug String?
@@ -124,6 +127,8 @@ model Vendor {
   participantConversations ParticipantConversation[]
   sentMessages             Message[]
   followStore              FollowStore[]
+  campaigns                Campaign[]
+  ticket                   Ticket[]
 }
 
 model VendorAddress {
@@ -305,6 +310,7 @@ model Product {
   productView      ProductView[]
   like             Like[]
   message          Message[]
+  campaigns        Campaign[]
 }
 
 model NutritionalFact {
@@ -599,7 +605,7 @@ model News {
 model NewsSection {
   id       String @id @default(cuid())
   newsId   String
-  news     News   @relation(fields: [newsId], references: [id])
+  news     News   @relation(fields: [newsId], references: [id], onDelete: Cascade)
   heading  String
   content  String
   order    Int
@@ -729,4 +735,43 @@ model PageView {
   ip        String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Campaign {
+  id                    String   @id @default(cuid())
+  title                 String
+  details               String
+  criteria              String
+  campaignStartDate     DateTime
+  campaignEndDate       DateTime
+  registrationStartDate DateTime
+  registrationEndDate   DateTime
+  type                  String
+  value                 Float
+
+  images String[]
+  banner String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+  vendors  Vendor[]
+}
+
+model Ticket {
+  id           String   @id @default(cuid())
+  topic        String
+  details      String
+  specifyIssue String
+  attachments  String[]
+  status String @default("Open") // Open, Resolved
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vendorId String?
+  vendor   Vendor? @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 }

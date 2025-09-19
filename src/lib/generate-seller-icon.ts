@@ -40,6 +40,8 @@ export const generateSellerIcon = (category: string) => {
       return "🎲";
     case "transportation-logistic-services":
       return "🚚";
+    case "consumer-electronics":
+      return "📱";
     default:
       return "🛒";
   }

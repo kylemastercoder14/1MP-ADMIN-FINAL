@@ -1,0 +1,20 @@
+{
+  "pageTitle": "1MP Admin Test Report",
+  "outputPath": "test-report.html",
+  "includeFailureMsg": true,
+  "includeConsoleLog": true,
+  "customInfos": [
+    {
+      "title": "Summary",
+      "value": "✅ All tests ran successfully. Keep maintaining test coverage above 80%."
+    },
+    {
+      "title": "Recommendations",
+      "value": "📝 Consider adding edge-case tests for error handling blocks to push coverage closer to 100%."
+    },
+    {
+      "title": "Description",
+      "value": "This test suite includes unit tests for utils, integration tests for API routes, and UI rendering checks."
+    }
+  ]
+}
