@@ -1,7 +1,8 @@
 import React from "react";
 import db from "@/lib/db";
-import Heading from '@/components/ui/heading';
-import Client from './_components/client';
+import Heading from "@/components/ui/heading";
+import Client from "./_components/client";
+import { ProductWithProps, VariantAttributes } from "@/types";
 
 const Page = async (props: {
   params: Promise<{
@@ -23,11 +24,23 @@ const Page = async (props: {
       vendorId: params.sellerId,
     },
     include: {
-      variants: true,
-      subCategory: true,
       vendor: true,
+      category: true,
+      subCategory: true,
+      variants: true,
+      productDiscount: true,
+      newArrivalDiscount: true,
+      specifications: true,
     },
   });
+
+  const transformedData: ProductWithProps[] = products.map((p) => ({
+    ...p,
+    variants: p.variants.map((v) => ({
+      ...v,
+      attributes: v.attributes as unknown as VariantAttributes,
+    })),
+  }));
 
   return (
     <div>
@@ -37,7 +50,7 @@ const Page = async (props: {
           description={`Here you can manage all the products and services of ${data?.name}.`}
         />
       </div>
-      <Client data={products} />
+      <Client data={transformedData} />
     </div>
   );
 };

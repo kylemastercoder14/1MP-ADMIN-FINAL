@@ -9,8 +9,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ActiveModifiers } from "react-day-picker";
-import { Calendar, CalendarProps } from "@/components/ui/calendar";
+import { Modifiers, DayPickerProps } from "react-day-picker";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -488,7 +488,7 @@ const NaturalLanguageInput = React.forwardRef<
 
 NaturalLanguageInput.displayName = "NaturalLanguageInput";
 
-type DateTimeLocalInputProps = {} & CalendarProps;
+type DateTimeLocalInputProps = {} & DayPickerProps;
 
 const DateTimeLocalInput = ({
   className,
@@ -497,12 +497,9 @@ const DateTimeLocalInput = ({
   const { value, onValueChange, Time } = useSmartDateInput();
 
   const formateSelectedDate = React.useCallback(
-    (
-      date: Date | undefined,
-      selectedDate: Date,
-      m: ActiveModifiers,
-      e: React.MouseEvent
-    ) => {
+    (selectedDate: Date | undefined) => {
+      if (!selectedDate) return;
+
       const parsedDateTime = parseDateTime(selectedDate);
 
       if (parsedDateTime) {
@@ -513,7 +510,7 @@ const DateTimeLocalInput = ({
         onValueChange(parsedDateTime);
       }
     },
-    [value, Time]
+    [value, Time, onValueChange]
   );
 
   return (

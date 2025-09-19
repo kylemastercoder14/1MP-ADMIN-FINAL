@@ -1,13 +1,49 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import * as React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DayPicker, useDayPicker, MonthCaptionProps } from "react-day-picker";
 
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>
+export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+
+function CustomCaption({ calendarMonth }: MonthCaptionProps) {
+  const { previousMonth, nextMonth, goToMonth, formatters } = useDayPicker();
+
+  return (
+    <div className="flex justify-center pt-1 relative items-center">
+      <button
+        disabled={!previousMonth}
+        onClick={() => previousMonth && goToMonth(previousMonth)}
+        className={cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-1"
+        )}
+        aria-label="Go to previous month"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+
+      <span className="text-sm font-medium">
+        {formatters.formatCaption(calendarMonth.date)}
+      </span>
+
+      <button
+        disabled={!nextMonth}
+        onClick={() => nextMonth && goToMonth(nextMonth)}
+        className={cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-1"
+        )}
+        aria-label="Go to next month"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
 
 function Calendar({
   className,
@@ -60,17 +96,32 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
+        MonthCaption: CustomCaption,
+        NextMonthButton: ({ className, ...props }) => (
+          <Button
+            variant="ghost"
+            type="button"
+            className={cn("", className)}
+            {...props}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         ),
-        IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("h-4 w-4", className)} {...props} />
+        PreviousMonthButton: ({ className, ...props }) => (
+          <Button
+            variant="ghost"
+            type="button"
+            className={cn("", className)}
+            {...props}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
         ),
       }}
       {...props}
     />
-  )
+  );
 }
-Calendar.displayName = "Calendar"
+Calendar.displayName = "Calendar";
 
-export { Calendar }
+export { Calendar };

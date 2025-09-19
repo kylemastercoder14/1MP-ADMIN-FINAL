@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import Heading from "@/components/ui/heading";
+import { CampaignProps, VariantAttributes } from '@/types';
 
 const Page = async (props: {
   params: Promise<{
@@ -19,14 +20,31 @@ const Page = async (props: {
     include: {
       products: {
         include: {
-          variants: true,
-          subCategory: true,
           vendor: true,
+          category: true,
+          subCategory: true,
+          variants: true,
+          productDiscount: true,
+          newArrivalDiscount: true,
+          specifications: true,
         },
       },
       vendors: true,
     },
   });
+
+  const transformed: CampaignProps | null = data
+    ? {
+        ...data,
+        products: data.products.map((p) => ({
+          ...p,
+          variants: p.variants.map((v) => ({
+            ...v,
+            attributes: (v.attributes ?? {}) as VariantAttributes, // cast JsonValue → VariantAttributes
+          })),
+        })),
+      }
+    : null;
 
   return (
     <div>
@@ -42,7 +60,7 @@ const Page = async (props: {
         />
       </div>
 
-      <CampaignForm initialData={data} />
+      <CampaignForm initialData={transformed} />
     </div>
   );
 };
