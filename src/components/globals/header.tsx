@@ -13,12 +13,11 @@ import { BellRing } from "@/components/animated-icons/bell-ring";
 import { ToggleMode } from "@/components/globals/toggle-mode";
 import { useTheme } from "next-themes";
 import { UserMenu } from "@/components/globals/user-menu";
-import { useAdminDetails } from "@/hooks/use-admin-details";
 import { useFullscreen } from "@/hooks/use-full-screen";
 import { Minimize } from "lucide-react";
+import { Admin } from "@prisma/client";
 
-const Header = () => {
-  const { admin, loading, user } = useAdminDetails();
+const Header = ({ admin }: { admin: Admin }) => {
   const { theme } = useTheme();
   const { isFullscreen, toggleFullscreen } = useFullscreen();
 
@@ -42,7 +41,12 @@ const Header = () => {
           <QuickLinks />
         </div>
 
-        <Button title="View Site" size="icon" variant="ghost" className="hidden sm:flex">
+        <Button
+          title="View Site"
+          size="icon"
+          variant="ghost"
+          className="hidden sm:flex"
+        >
           <Chrome stroke={theme === "dark" ? "#fff" : "#111"} />
           <span className="sr-only">View Site</span>
         </Button>
@@ -69,13 +73,11 @@ const Header = () => {
         <ToggleMode />
 
         <UserMenu
-          loading={loading}
           user={{
-            name: "1 Market Philippines",
-            email: admin?.email || "",
-            avatar:
-              admin?.image ||
-              user?.user_metadata?.avatar_url ||
+            ...admin,
+            email: admin.email,
+            image:
+              admin.image ||
               "https://static.vecteezy.com/system/resources/previews/009/636/683/original/admin-3d-illustration-icon-png.png",
           }}
         />

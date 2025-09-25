@@ -23,6 +23,8 @@ import {
   StatMetric,
   TopProductPoint,
 } from "@/types";
+import { cookies } from "next/headers";
+import * as jose from "jose";
 
 export async function signIn(email: string, password: string) {
   try {
@@ -36,24 +38,6 @@ export async function signIn(email: string, password: string) {
     // Check if admin exists in your database
     const admin = await db.admin.findFirst({ where: { email } });
 
-    const supabase = createClient();
-    const {
-      data: { session },
-      error: supabaseError,
-    } = await (
-      await supabase
-    ).auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (supabaseError) {
-      return {
-        success: false,
-        message: supabaseError.message,
-      };
-    }
-
     if (!admin) {
       return {
         success: false,
@@ -61,11 +45,29 @@ export async function signIn(email: string, password: string) {
       };
     }
 
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const alg = "HS256";
+
+    const jwt = await new jose.SignJWT({})
+      .setProtectedHeader({ alg })
+      .setExpirationTime("72h")
+      .setSubject(admin.id.toString())
+      .sign(secret);
+
+    (
+      await // Set the cookie with the JWT
+      cookies()
+    ).set("1MP-Authorization", jwt, {
+      httpOnly: true, // Set to true for security
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      maxAge: 60 * 60 * 24 * 3, // Cookie expiration (3 days in seconds)
+      sameSite: "strict", // Adjust according to your needs
+      path: "/", // Adjust path as needed
+    });
+
     return {
       success: true,
       message: "Login successful.",
-      session,
-      admin,
     };
   } catch (error) {
     console.error("Login failed:", error);
@@ -81,6 +83,10 @@ export async function signIn(email: string, password: string) {
     };
   }
 }
+
+export const signOut = async () => {
+  (await cookies()).set("1MP-Authorization", "", { maxAge: 0, path: "/" });
+};
 
 export async function createCategory(data: {
   name: string;

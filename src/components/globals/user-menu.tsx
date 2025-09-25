@@ -19,23 +19,17 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import AlertModal from "@/components/ui/alert-modal";
 import { useState } from "react";
+import { Admin } from '@prisma/client';
 
 export function UserMenu({
   user,
-  loading,
 }: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-  loading: boolean;
+  user: Admin;
 }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
@@ -59,23 +53,6 @@ export function UserMenu({
     }
   };
 
-  if (loading) {
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <div className="flex items-center gap-2 px-2 py-2 rounded-lg">
-            <Skeleton className="h-8 w-8 rounded-lg" />
-            <div className="flex-1 space-y-1">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-3 w-32" />
-            </div>
-            <Skeleton className="h-4 w-4 rounded-full" />
-          </div>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    );
-  }
-
   return (
     <>
       <AlertModal
@@ -94,11 +71,11 @@ export function UserMenu({
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage className='object-cover' src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">{user.name.charAt(0)}</AvatarFallback>
+                  <AvatarImage className='object-cover' src={user.image as string} alt={"1 Market Philippines"} />
+                  <AvatarFallback className="rounded-lg">O</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">1 Market Philippines</span>
                   <span className="truncate text-xs text-muted-foreground">
                     {user.email}
                   </span>
@@ -115,11 +92,11 @@ export function UserMenu({
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg object-cover">
-                    <AvatarImage className="object-cover" src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-lg">{user.name.charAt(0)}</AvatarFallback>
+                    <AvatarImage className="object-cover" src={user.image as string} alt={"1 Market Philippines"} />
+                    <AvatarFallback className="rounded-lg">O</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user.name}</span>
+                    <span className="truncate font-medium">1 Market Philippines</span>
                     <span className="truncate text-xs text-muted-foreground">
                       {user.email}
                     </span>
