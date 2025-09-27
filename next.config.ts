@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
       "img.kwcdn.com",
       "images.pexels.com",
       "s.alicdn.com",
+      "isomorphic-furyroad.s3.amazonaws.com",
     ],
   },
   eslint: {

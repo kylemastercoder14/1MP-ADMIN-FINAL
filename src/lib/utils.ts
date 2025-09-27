@@ -168,3 +168,20 @@ export function formatDiscountDateRange(
     return "Discount Period";
   }
 }
+
+export function formatTimeRange(range: string) {
+  switch (range) {
+    case "last7days":
+      return "last 7 days";
+    case "last28days":
+      return "last 28 days";
+    case "last3months":
+      return "last 3 months";
+    default:
+      return range;
+  }
+}
+
+export function formatToPeso(amount: number) {
+  return `₱${amount.toLocaleString("en-PH")}`;
+}

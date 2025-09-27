@@ -54,13 +54,22 @@ const CategoryForm = ({
     name: "name",
   });
 
-  // Update the slug whenever the name changes
   useEffect(() => {
-    const slug = nameValue
-      ? nameValue.trim().toLowerCase().replace(/\s+/g, "-")
-      : "";
-    form.setValue("slug", slug, { shouldValidate: true });
-  }, [nameValue, form]);
+    if (!initialData) {
+      // Only generate slug if creating new category
+      const slug = nameValue
+        ? nameValue
+            .trim()
+            .toLowerCase()
+            .replace(/&/g, "-") // replace & with hyphen
+            .replace(/,/g, "-") // replace commas with hyphen
+            .replace(/\s+/g, "-") // replace spaces with hyphen
+            .replace(/-+/g, "-") // replace multiple hyphens with single
+            .replace(/^-|-$/g, "") // remove leading/trailing hyphen
+        : "";
+      form.setValue("slug", slug, { shouldValidate: true });
+    }
+  }, [nameValue, form, initialData]);
 
   async function onSubmit(values: z.infer<typeof CategoryValidators>) {
     try {
