@@ -19,10 +19,14 @@ export const getStatsAnalytics = async (range: string): Promise<StatCards> => {
   });
 
   const currentRevenueTotal = currentRevenue.reduce(
-    (acc, r) => acc + r.amount,
+    (acc: number, r: { amount: number }) => acc + r.amount,
     0
   );
-  const prevRevenueTotal = prevRevenue.reduce((acc, r) => acc + r.amount, 0);
+
+  const prevRevenueTotal = prevRevenue.reduce(
+    (acc: number, r: { amount: number }) => acc + r.amount,
+    0
+  );
 
   // ---- Products ----
   const newProducts = await db.product.count({
