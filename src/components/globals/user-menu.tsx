@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  LogOutIcon,
-  MoreVerticalIcon,
-} from "lucide-react";
+import { LogOutIcon, MoreVerticalIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -19,38 +16,23 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import AlertModal from "@/components/ui/alert-modal";
 import { useState } from "react";
-import { Admin } from '@prisma/client';
+import { Admin } from "@prisma/client";
+import { signOut } from "@/actions";
 
-export function UserMenu({
-  user,
-}: {
-  user: Admin;
-}) {
+export function UserMenu({ user }: { user: Admin }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
-    const response = await axios.post("/api/admin/sign-out", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    await signOut();
 
-    if (response.status === 200) {
-      toast.success("Logged out successfully!");
-      router.push("/sign-in");
-    } else {
-      console.error("Logout failed:", response.data);
-      toast.error(
-        response.data.message || "Failed to log out. Please try again."
-      );
-    }
+    toast.success("Logged out successfully!");
+    router.push("/sign-in");
   };
 
   return (
@@ -71,11 +53,17 @@ export function UserMenu({
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage className='object-cover' src={user.image as string} alt={"1 Market Philippines"} />
+                  <AvatarImage
+                    className="object-cover"
+                    src={user.image as string}
+                    alt={"1 Market Philippines"}
+                  />
                   <AvatarFallback className="rounded-lg">O</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">1 Market Philippines</span>
+                  <span className="truncate font-medium">
+                    1 Market Philippines
+                  </span>
                   <span className="truncate text-xs text-muted-foreground">
                     {user.email}
                   </span>
@@ -92,11 +80,17 @@ export function UserMenu({
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg object-cover">
-                    <AvatarImage className="object-cover" src={user.image as string} alt={"1 Market Philippines"} />
+                    <AvatarImage
+                      className="object-cover"
+                      src={user.image as string}
+                      alt={"1 Market Philippines"}
+                    />
                     <AvatarFallback className="rounded-lg">O</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">1 Market Philippines</span>
+                    <span className="truncate font-medium">
+                      1 Market Philippines
+                    </span>
                     <span className="truncate text-xs text-muted-foreground">
                       {user.email}
                     </span>
