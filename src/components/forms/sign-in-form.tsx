@@ -165,7 +165,7 @@ const SignInForm = () => {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-primary to-red-800 hover:from-primary hover:to-red-800 text-white font-semibold rounded-none shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+                className="w-full h-12 bg-gradient-to-r from-primary to-red-800 hover:from-primary hover:to-red-800 text-white font-semibold rounded-none shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] z-50"
                 disabled={isLoading}
               >
                 {isLoading ? (

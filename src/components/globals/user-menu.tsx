@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOutIcon, MoreVerticalIcon } from "lucide-react";
+import { Loader2, LogOutIcon, MoreVerticalIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -27,16 +27,29 @@ export function UserMenu({ user }: { user: Admin }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const handleLogout = async () => {
+    setIsRedirecting(true);
     await signOut();
 
     toast.success("Logged out successfully!");
     router.push("/sign-in");
+    setIsRedirecting(false);
   };
 
   return (
     <>
+      {isRedirecting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-lg font-medium">
+              Logging out...
+            </p>
+          </div>
+        </div>
+      )}
       <AlertModal
         title="Log out"
         description="Are you sure you want to log out?"
