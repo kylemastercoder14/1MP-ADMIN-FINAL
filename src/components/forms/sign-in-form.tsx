@@ -48,7 +48,9 @@ const SignInForm = () => {
   };
 
   const onSubmit = async (values: z.infer<typeof SigninValidators>) => {
-    setIsRedirecting(true);
+    setTimeout(() => {
+      setIsRedirecting(true);
+    }, 5000);
     try {
       const response = await signIn(values.email, values.password);
       if (!response.success) {
@@ -56,9 +58,7 @@ const SignInForm = () => {
         return;
       }
 
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 5000);
+      router.push("/dashboard");
     } catch (error: any) {
       console.error("Login failed:", error);
       let errorMessage = "Login failed. Please check your credentials.";
