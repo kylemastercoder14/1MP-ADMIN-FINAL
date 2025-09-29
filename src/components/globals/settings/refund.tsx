@@ -9,7 +9,7 @@ import { SettingsData } from "@/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { updateRefundPolicy } from "@/actions";
-import { RichTextEditor } from "@/components/globals/rich-text-editor";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 const RefundPolicySettings = ({ data }: { data: SettingsData | null }) => {
   const router = useRouter();

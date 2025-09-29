@@ -21,7 +21,7 @@ import { Label } from "@/components/ui/label";
 import { SettingsData } from "@/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { RichTextEditor } from "@/components/globals/rich-text-editor";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Plus, Pencil } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { createFaq, deleteFaq, updateFaq } from "@/actions";

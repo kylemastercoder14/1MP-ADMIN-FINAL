@@ -54,7 +54,6 @@
     "@tiptap/extension-image": "^2.25.0",
     "@tiptap/extension-link": "^2.25.0",
     "@tiptap/extension-placeholder": "^2.25.0",
-    "@tiptap/extension-table": "^3.6.1",
     "@tiptap/extension-underline": "^2.25.0",
     "@tiptap/react": "^2.25.0",
     "@tiptap/starter-kit": "^2.25.0",
