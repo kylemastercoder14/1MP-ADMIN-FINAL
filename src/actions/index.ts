@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import db from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
@@ -12,7 +12,6 @@ import {
   NewsValidators,
 } from "@/validators/admin";
 import { ProductStatusHTML } from "@/components/email-template/product-status";
-import nodemailer from "nodemailer";
 import { SellerStatusHTML } from "@/components/email-template/seller-status";
 import {
   AgeDistributionPoint,
@@ -25,6 +24,7 @@ import {
 } from "@/types";
 import { cookies } from "next/headers";
 import * as jose from "jose";
+import { sendMail } from "@/lib/email";
 
 export async function signIn(email: string, password: string) {
   try {
@@ -707,35 +707,24 @@ export const sendStatusProductEmail = async (
   productImage: string,
   productName: string
 ) => {
-  const htmlContent = await ProductStatusHTML({
-    status: status as "Approved" | "Rejected" | "Deactivated" | "Activated",
-    storeName,
-    productImage,
-    productName,
-  });
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "onemarketphilippines2025@gmail.com",
-      pass: "vrbscailgpflucvn",
-    },
-  });
-
-  const message = {
-    from: "onemarketphilippines2025@gmail.com",
-    to: email,
-    subject: `Your product has been ${status}`,
-    text: `Your product has been ${status}`,
-    html: htmlContent,
-  };
-
   try {
-    await transporter.sendMail(message);
+    const htmlContent = await ProductStatusHTML({
+      status,
+      storeName,
+      productImage,
+      productName,
+    });
+
+    await sendMail(
+      email,
+      `Your product has been ${status}`,
+      `Your product "${productName}" has been ${status} in ${storeName}.`,
+      htmlContent
+    );
 
     return { success: "Email has been sent." };
   } catch (error) {
-    console.error("Error sending notification", error);
+    console.error("Error sending product status email:", error);
     return { message: "An error occurred. Please try again." };
   }
 };
@@ -790,31 +779,20 @@ export const sendVerificationReasonEmail = async (
   reason: string,
   status: "Approved" | "Rejected"
 ) => {
-  const htmlContent = await SellerStatusHTML({
-    sellerId,
-    storeName,
-    status: status as "Approved" | "Rejected",
-    reason,
-  });
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "onemarketphilippines2025@gmail.com",
-      pass: "vrbscailgpflucvn",
-    },
-  });
-
-  const message = {
-    from: "onemarketphilippines2025@gmail.com",
-    to: email,
-    subject: `Your application has been ${status} | 1 Market Philippines`,
-    text: `Your application has been ${status} | 1 Market Philippines`,
-    html: htmlContent,
-  };
-
   try {
-    await transporter.sendMail(message);
+    const htmlContent = await SellerStatusHTML({
+      sellerId,
+      storeName,
+      status,
+      reason,
+    });
+
+    await sendMail(
+      email,
+      `Your application has been ${status} | 1 Market Philippines`,
+      `Your application has been ${status} | 1 Market Philippines\n\nReason: ${reason}`,
+      htmlContent
+    );
 
     return { success: "Email has been sent." };
   } catch (error) {
@@ -1429,5 +1407,283 @@ export const deleteCampaign = async (id: string) => {
   } catch (error) {
     console.error("Error deleting campaign:", error);
     return { error: "An error occurred while deleting the campaign." };
+  }
+};
+
+export const uploadAdminFileToDatabase = async (
+  fileUrl: string,
+  field: "image" | "lightLogo" | "darkLogo"
+) => {
+  try {
+    const admin = await db.admin.findFirst();
+
+    if (!admin) {
+      return { error: "No admin account found" };
+    }
+
+    const updated = await db.admin.update({
+      where: { id: admin.id },
+      data: {
+        [field]: fileUrl,
+      },
+    });
+
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error("Error updating file:", error);
+    return { error: "An error occurred while updating the file." };
+  }
+};
+
+export const deleteAdminFileFromDatabase = async (
+  field: "image" | "lightLogo" | "darkLogo"
+) => {
+  try {
+    const admin = await db.admin.findFirst();
+
+    if (!admin) {
+      return { error: "No admin account found" };
+    }
+
+    const updated = await db.admin.update({
+      where: { id: admin.id },
+      data: {
+        [field]: null,
+      },
+    });
+
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    return { error: "An error occurred while deleting the file." };
+  }
+};
+
+export const updateBasicInfo = async (
+  email: string,
+  companyNumber: string,
+  id: string
+) => {
+  try {
+    const updated = await db.admin.update({
+      where: { id },
+      data: {
+        email,
+        companyNumber,
+      },
+    });
+
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error("Error updating email and company number:", error);
+    return {
+      error: "An error occurred while updating the email and company number.",
+    };
+  }
+};
+
+export const updateCompanyInfo = async (
+  companyName: string,
+  companyTagLine: string,
+  region: string,
+  province: string,
+  municipality: string,
+  barangay: string,
+  companyAddress: string,
+  zipCode: string,
+  commission: number,
+  id: string
+) => {
+  try {
+    const updated = await db.admin.update({
+      where: { id },
+      data: {
+        companyName,
+        companyTagLine,
+        region,
+        province,
+        municipality,
+        barangay,
+        companyAddress,
+        zipCode,
+        tax: commission,
+      },
+    });
+
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error("Error updating email and company number:", error);
+    return {
+      error: "An error occurred while updating the email and company number.",
+    };
+  }
+};
+
+export const updateEmailConfig = async (
+  email: string,
+  password: string,
+  id: string
+) => {
+  try {
+    const updated = await db.admin.update({
+      where: { id },
+      data: {
+        gmailSmtp: email,
+        appPasswordSmtp: password,
+      },
+    });
+
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error("Error updating email and app password:", error);
+    return {
+      error: "An error occurred while updating the email and app password.",
+    };
+  }
+};
+
+export const createFaq = async (
+  topic: string,
+  question: string,
+  answer: string,
+  isActive: boolean
+) => {
+  try {
+    const created = await db.faqs.create({
+      data: {
+        topic,
+        question,
+        answer,
+        isActive,
+      },
+    });
+
+    return { success: true, data: created };
+  } catch (error) {
+    console.error("Error creating faq:", error);
+    return {
+      error: "An error occurred while creating the faq.",
+    };
+  }
+};
+
+export const updateFaq = async (
+  id: string,
+  topic: string,
+  question: string,
+  answer: string,
+  isActive: boolean
+) => {
+  try {
+    const updated = await db.faqs.update({
+      where: { id },
+      data: { topic, question, answer, isActive },
+    });
+
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error("Error updating faq:", error);
+    return {
+      error: "An error occurred while updating the faq.",
+    };
+  }
+};
+
+export const deleteFaq = async (id: string) => {
+  try {
+    await db.faqs.delete({
+      where: { id },
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting faq:", error);
+    return {
+      error: "An error occurred while deleting the faq.",
+    };
+  }
+};
+
+export const createOrUpdateOfficeHours = async (
+  officeHours: {
+    day: string;
+    timeStart: string;
+    timeEnd: string;
+    isOpen: boolean;
+  }[]
+) => {
+  try {
+    const results = [];
+
+    for (const item of officeHours) {
+      const payload = {
+        timeStart: item.isOpen ? item.timeStart : null,
+        timeEnd: item.isOpen ? item.timeEnd : null,
+        isOpen: item.isOpen,
+      };
+
+      const existing = await db.companyHours.findFirst({
+        where: { day: item.day },
+      });
+
+      if (existing) {
+        const updated = await db.companyHours.update({
+          where: { id: existing.id },
+          data: payload,
+        });
+        results.push(updated);
+      } else {
+        const created = await db.companyHours.create({
+          data: {
+            day: item.day,
+            ...payload,
+          },
+        });
+        results.push(created);
+      }
+    }
+
+    return { success: true, data: results };
+  } catch (error) {
+    console.error("Error saving office hours:", error);
+    return {
+      error: "An error occurred while saving office hours.",
+    };
+  }
+};
+
+export const updateRefundPolicy = async (
+  refundableDays: string,
+  refundPolicy: string,
+  id: string
+) => {
+  try {
+    // Find the first policy
+    let policy = await db.policies.findFirst();
+
+    // If no policy exists, create one
+    if (!policy) {
+      policy = await db.policies.create({
+        data: { refundPolicy },
+      });
+    } else {
+      // If policy exists, update it
+      await db.policies.update({
+        where: { id: policy.id },
+        data: { refundPolicy },
+      });
+    }
+
+    // Update admin's refundableDays
+    const updated = await db.admin.update({
+      where: { id },
+      data: { refundableDays },
+    });
+
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error("Error updating refund policy:", error);
+    return {
+      error: "An error occurred while updating the refund policy.",
+    };
   }
 };

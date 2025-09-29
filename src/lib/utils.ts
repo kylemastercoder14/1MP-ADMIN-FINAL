@@ -185,3 +185,125 @@ export function formatTimeRange(range: string) {
 export function formatToPeso(amount: number) {
   return `₱${amount.toLocaleString("en-PH")}`;
 }
+
+type OfficeHour = {
+  day: string;
+  timeStart: string | null;
+  timeEnd: string | null;
+  isOpen: boolean;
+};
+
+export const parseTimeToMinutes = (time?: string | null): number | null => {
+  if (!time) return null;
+  const t = time.trim().toLowerCase();
+
+  // Accept forms like:
+  // "08:00", "8:00", "08:00:00", "08:00:00 am", "8:00 am", "08:00am", "8:00pm"
+  const m = t.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(am|pm)?$/);
+  if (!m) return null;
+
+  let hour = Number(m[1]);
+  const minute = Number(m[2]);
+  const ampm = m[3];
+
+  if (ampm) {
+    if (ampm === "pm" && hour !== 12) hour += 12;
+    if (ampm === "am" && hour === 12) hour = 0;
+  }
+
+  if (Number.isNaN(hour) || Number.isNaN(minute)) return null;
+  return hour * 60 + minute;
+};
+
+// normalize various inputs into canonical "HH:mm" (24h) used for inputs & comparisons
+export const normalizeToHHMM = (time?: string | null): string => {
+  const mins = parseTimeToMinutes(time);
+  if (mins === null) return "";
+  const hh = Math.floor(mins / 60)
+    .toString()
+    .padStart(2, "0");
+  const mm = (mins % 60).toString().padStart(2, "0");
+  return `${hh}:${mm}`;
+};
+
+// formatted display "h:mm AM/PM"
+export const formatTimeDisplay = (time?: string | null): string => {
+  const mins = parseTimeToMinutes(time);
+  if (mins === null) return "--:--";
+  let hour = Math.floor(mins / 60);
+  const minute = mins % 60;
+  const ampm = hour >= 12 ? "PM" : "AM";
+  hour = hour % 12;
+  if (hour === 0) hour = 12;
+  return `${hour}:${minute.toString().padStart(2, "0")} ${ampm}`;
+};
+
+// group consecutive days (Mon->Sun order), using normalized comparison.
+// Accepts OfficeHour[] (times may be null/empty) and returns grouped string.
+export const formatWorkingHours = (hours: OfficeHour[]) => {
+  if (!hours || hours.length === 0) return "";
+
+  const dayOrder = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
+  // ensure Mon->Sun order
+  const sorted = [...hours].sort(
+    (a, b) => dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day)
+  );
+
+  const result: string[] = [];
+  let startDay = sorted[0].day;
+  let prev = sorted[0];
+
+  for (let i = 1; i <= sorted.length; i++) {
+    const current = sorted[i];
+
+    const prevStart = normalizeToHHMM(prev.timeStart);
+    const prevEnd = normalizeToHHMM(prev.timeEnd);
+    const currStart = current ? normalizeToHHMM(current.timeStart) : null;
+    const currEnd = current ? normalizeToHHMM(current.timeEnd) : null;
+
+    const sameSchedule =
+      current &&
+      prev.isOpen === current.isOpen &&
+      (!prev.isOpen || (prevStart === currStart && prevEnd === currEnd));
+
+    if (sameSchedule) {
+      // continue grouping
+      continue;
+    }
+
+    // finalize prev group
+    if (prev.isOpen) {
+      const dispStart = formatTimeDisplay(prevStart || prev.timeStart);
+      const dispEnd = formatTimeDisplay(prevEnd || prev.timeEnd);
+
+      if (startDay === prev.day) {
+        result.push(`${prev.day} (${dispStart} - ${dispEnd})`);
+      } else {
+        result.push(`${startDay} - ${prev.day} (${dispStart} - ${dispEnd})`);
+      }
+    } else {
+      if (startDay === prev.day) {
+        result.push(`${prev.day} (Closed)`);
+      } else {
+        result.push(`${startDay} - ${prev.day} (Closed)`);
+      }
+    }
+
+    // start new group from current
+    if (current) {
+      startDay = current.day;
+      prev = current;
+    }
+  }
+
+  return result.join(", ");
+};
