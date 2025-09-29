@@ -54,7 +54,10 @@
     "@tiptap/extension-image": "^2.25.0",
     "@tiptap/extension-link": "^2.25.0",
     "@tiptap/extension-placeholder": "^2.25.0",
+<<<<<<< HEAD
     "@tiptap/extension-table": "^2.4.0",
+=======
+>>>>>>> f7a39314e1d6296e8370ff6d21e83984ca1407c9
     "@tiptap/extension-underline": "^2.25.0",
     "@tiptap/react": "^2.25.0",
     "@tiptap/starter-kit": "^2.25.0",
