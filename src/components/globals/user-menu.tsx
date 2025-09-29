@@ -30,13 +30,13 @@ export function UserMenu({ user }: { user: Admin }) {
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   const handleLogout = async () => {
-    setIsRedirecting(true);
+    setTimeout(() => {
+      setIsRedirecting(true);
+    }, 5000);
     await signOut();
 
     toast.success("Logged out successfully!");
-    setTimeout(() => {
-      router.push("/sign-in");
-    }, 5000);
+    router.push("/sign-in");
     setIsRedirecting(false);
   };
 
