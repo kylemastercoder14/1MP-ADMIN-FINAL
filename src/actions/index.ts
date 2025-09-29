@@ -1687,3 +1687,34 @@ export const updateRefundPolicy = async (
     };
   }
 };
+
+export const updatePolicyAdmin = async (value: string, key: keyof Policies) => {
+  try {
+    // Find the first policy record
+    let policy = await db.policies.findFirst();
+
+    if (!policy) {
+      // Create new with dynamic key
+      policy = await db.policies.create({
+        data: {
+          [key]: value,
+        },
+      });
+    } else {
+      // Update existing with dynamic key
+      await db.policies.update({
+        where: { id: policy.id },
+        data: {
+          [key]: value,
+        },
+      });
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error(`Error updating policy field "${key}":`, error);
+    return {
+      error: `An error occurred while updating the ${key}.`,
+    };
+  }
+};

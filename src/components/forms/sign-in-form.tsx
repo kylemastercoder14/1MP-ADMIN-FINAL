@@ -56,7 +56,9 @@ const SignInForm = () => {
         return;
       }
 
-      router.push("/dashboard");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 5000);
     } catch (error: any) {
       console.error("Login failed:", error);
       let errorMessage = "Login failed. Please check your credentials.";
