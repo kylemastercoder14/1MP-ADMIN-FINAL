@@ -10,6 +10,7 @@ import {
   Users,
   FileText,
   Store,
+  Settings,
 } from "lucide-react";
 
 import { NavMain } from "@/components/globals/nav-main";
@@ -20,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavSellers } from "@/components/globals/nav-sellers";
 import { Vendor } from "@prisma/client";
-import AppLogo from '@/components/globals/app-logo';
+import AppLogo from "@/components/globals/app-logo";
 
 const data = {
   navMain: [
@@ -80,10 +81,6 @@ const data = {
           title: "Campaigns",
           url: "/marketing/campaigns",
         },
-        {
-          title: "Policies",
-          url: "/marketing/policies",
-        },
       ],
     },
     {
@@ -95,20 +92,32 @@ const data = {
       title: "Feedbacks",
       url: "/feedbacks",
       icon: FileText,
+      disabled: true
+    },
+    {
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
     },
   ],
 };
 
 export function AppSidebar({
   sellers,
+  initialData,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   sellers: Vendor[];
+  initialData: {
+    name: string;
+    lightLogo: string;
+    darkLogo: string;
+  }
 }) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
-        <AppLogo />
+        <AppLogo initialData={initialData} />
         <NavMain items={data.navMain} />
       </SidebarHeader>
       <SidebarContent>

@@ -22,7 +22,14 @@ const MainLayout = async ({ children }: { children: React.ReactNode }) => {
     >
       <NuqsAdapter>
         <SidebarProvider>
-          <AppSidebar sellers={sellers} />
+          <AppSidebar
+            initialData={{
+              name: admin.companyName!,
+              lightLogo: admin.lightLogo!,
+              darkLogo: admin.darkLogo!,
+            }}
+            sellers={sellers}
+          />
           <SidebarInset>
             <Header admin={admin} />
             <main className="p-5 relative">{children}</main>

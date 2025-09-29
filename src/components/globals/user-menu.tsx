@@ -75,7 +75,7 @@ export function UserMenu({ user }: { user: Admin }) {
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    1 Market Philippines
+                    {user.companyName || "1 Market Philippines"}
                   </span>
                   <span className="truncate text-xs text-muted-foreground">
                     {user.email}

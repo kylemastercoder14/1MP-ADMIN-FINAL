@@ -23,6 +23,10 @@ import {
   Specification,
   NutritionalFact,
   PromoCode,
+  Admin,
+  CompanyHours,
+  Faqs,
+  Policies,
 } from "@prisma/client";
 
 export interface CategoryWithProps extends Category {
@@ -171,4 +175,11 @@ export interface ProductVariantsProps {
   onVariantSelect?: (variant: ProductVariant | null) => void;
   selectedVariantId?: string | null;
   sizeGuide?: string | null;
+}
+
+export interface SettingsData {
+  admin: Admin | null;
+  officeHours: CompanyHours[];
+  faqs: Faqs[];
+  policies: Policies[];
 }

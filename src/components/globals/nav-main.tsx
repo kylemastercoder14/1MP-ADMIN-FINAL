@@ -17,6 +17,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
+import { Badge } from "../ui/badge";
 
 export function NavMain({
   items,
@@ -26,6 +27,7 @@ export function NavMain({
     url: string;
     icon: LucideIcon;
     isActive?: boolean;
+    disabled?: boolean;
     items?: {
       title: string;
       url: string;
@@ -52,6 +54,11 @@ export function NavMain({
                   <a href={item.url}>
                     <item.icon />
                     {item.title}
+                    {item.disabled && (
+                      <Badge variant="secondary" className="ml-auto">
+                        Soon
+                      </Badge>
+                    )}
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>

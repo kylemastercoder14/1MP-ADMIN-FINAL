@@ -1,4 +1,10 @@
+/* Import Tailwind first */
 @import "tailwindcss";
+
+/* Then plugins */
+@plugin "@tailwindcss/typography";
+
+/* Then other CSS (like animations or custom styles) */
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -25,6 +31,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);

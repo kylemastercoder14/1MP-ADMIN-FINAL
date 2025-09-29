@@ -8,10 +8,60 @@ datasource db {
 }
 
 model Admin {
+  id              String  @id @default(cuid())
+  email           String
+  password        String
+  image           String?
+  tax             Float? // 20%
+  companyNumber   String?
+  region          String?
+  province        String?
+  municipality    String?
+  barangay        String?
+  companyAddress  String?
+  zipCode         String?
+  gmailSmtp       String?
+  appPasswordSmtp String?
+  darkLogo        String?
+  lightLogo       String?
+  companyName     String?
+  companyTagLine  String?
+  refundableDays  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Policies {
+  id                             String   @id @default(cuid())
+  legalNotice                    String?
+  productListingPolicy           String?
+  intellectualPropertyProtection String?
+  privacyPolicy                  String?
+  termsOfUse                     String?
+  integrityCompliance            String?
+  refundPolicy                   String?
+  createdAt                      DateTime @default(now())
+  updatedAt                      DateTime @updatedAt
+}
+
+model CompanyHours {
+  id        String @id @default(cuid())
+  day       String
+  timeStart String?
+  timeEnd   String?
+  isOpen    Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Faqs {
   id       String  @id @default(cuid())
-  email    String
-  password String
-  image    String?
+  topic    String
+  question String
+  answer   String
+  isActive Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -607,18 +657,6 @@ model NewsSection {
   content  String
   order    Int
   anchorId String @unique
-}
-
-model Policies {
-  id                             String   @id @default(cuid())
-  legalNotice                    String?
-  productListingPolicy           String?
-  intellectualPropertyProtection String?
-  privacyPolicy                  String?
-  termsOfUse                     String?
-  integrityCompliance            String?
-  createdAt                      DateTime @default(now())
-  updatedAt                      DateTime @updatedAt
 }
 
 model ProductView {

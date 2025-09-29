@@ -1,3 +1,17 @@
+import {
+  Box,
+  BrainCog,
+  Clock,
+  FileText,
+  HelpCircle,
+  Mail,
+  Scale,
+  ShieldUser,
+  ShoppingBag,
+  Store,
+  TriangleAlert,
+} from "lucide-react";
+
 export const paymentMethods = [
   {
     name: "Visa",
@@ -150,3 +164,38 @@ export const MAX_IMAGE_SIZE_MB = 5;
 export const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 export const MAX_VIDEO_SIZE_MB = 5;
 export const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
+
+export const sidebarItems = [
+  { id: "general", label: "General", icon: Store },
+  { id: "email", label: "Email Configuration", icon: Mail },
+  { id: "faqs", label: "FAQs", icon: HelpCircle },
+  { id: "officeHours", label: "Office Hours", icon: Clock },
+  { id: "refund", label: "Refund Policy", icon: Box },
+  { id: "legalNotice", label: "Legal Notice", icon: Scale },
+  { id: "productListingPolicy", label: "Product Listing", icon: ShoppingBag },
+  {
+    id: "intellectualPropertyProtection",
+    label: "Intellectual Property",
+    icon: BrainCog,
+  },
+  {
+    id: "privacyPolicy",
+    label: "Privacy Policy",
+    icon: ShieldUser,
+  },
+  {
+    id: "termsOfUse",
+    label: "Terms of Use",
+    icon: FileText,
+  },
+  {
+    id: "integrityCompliance",
+    label: "Integrity Compliance",
+    icon: TriangleAlert,
+  },
+];
+
+export * from "./barangay";
+export * from "./region";
+export * from "./municipality";
+export * from "./province";
