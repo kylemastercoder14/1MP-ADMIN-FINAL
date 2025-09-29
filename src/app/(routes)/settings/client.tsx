@@ -32,17 +32,17 @@ const SettingsClient = ({ data }: { data: SettingsData }) => {
       case "refund":
         return <RefundPolicySettings data={data} />;
       case "legalNotice":
-        return <LegalNoticeSettings />;
+        return <LegalNoticeSettings data={data} />;
       case "productListingPolicy":
-        return <ProductListingSettings />;
+        return <ProductListingSettings data={data} />;
       case "intellectualPropertyProtection":
-        return <IntellectualPropertySettings />;
+        return <IntellectualPropertySettings data={data} />;
       case "privacyPolicy":
-        return <PrivacyPolicySettings />;
+        return <PrivacyPolicySettings data={data} />;
       case "termsOfUse":
-        return <TermsOfUseSettings />;
+        return <TermsOfUseSettings data={data} />;
       case "integrityCompliance":
-        return <IntegrityComplianceSettings />;
+        return <IntegrityComplianceSettings data={data} />;
       default:
         return <GeneralSettings data={data} />;
     }

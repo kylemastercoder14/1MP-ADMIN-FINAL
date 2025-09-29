@@ -17,7 +17,7 @@ const RefundPolicySettings = ({ data }: { data: SettingsData | null }) => {
   const [refundableDays, setRefundableDays] = useState(data?.admin?.refundableDays);
   const [refundPolicy, setRefundPolicy] = useState(data?.policies[0]?.refundPolicy);
 
-  const handleSubmitEmail = async (e: React.FormEvent) => {
+  const handleSubmitRefund = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setLoading(true);
@@ -75,7 +75,7 @@ const RefundPolicySettings = ({ data }: { data: SettingsData | null }) => {
             </div>
           </div>
           <Button
-            onClick={handleSubmitEmail}
+            onClick={handleSubmitRefund}
             disabled={loading}
             variant="primary"
             className="mt-5 ml-auto flex items-center justify-end"

@@ -99,7 +99,7 @@ const SearchCommand = () => {
     {
       name: "Product Rating",
       icon: Sparkles,
-      action: () => router.push("/products/rating"),
+      action: () => router.push("/products/ratings"),
     },
     {
       name: "Announcement",
