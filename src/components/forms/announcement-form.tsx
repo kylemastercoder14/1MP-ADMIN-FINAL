@@ -176,7 +176,7 @@ const NewsAnnouncementForm = ({
                           return ""; // or skip
                         })
                         .filter(Boolean)}
-                      bucket="assets"
+                      folder="assets/announcements"
                     />
                   </FormControl>
                   <FormDescription>
