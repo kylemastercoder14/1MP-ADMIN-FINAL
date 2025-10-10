@@ -627,7 +627,7 @@ const NewsForm = ({
                       onImageUpload={(url: string) => field.onChange(url)}
                       disabled={isSubmitting}
                       defaultValue={field.value ?? ""}
-                      bucket="assets"
+                      folder='assets/news'
                     />
                   </FormControl>
                   <FormDescription>
