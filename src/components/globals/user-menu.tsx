@@ -30,14 +30,20 @@ export function UserMenu({ user }: { user: Admin }) {
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   const handleLogout = async () => {
-    setTimeout(() => {
-      setIsRedirecting(true);
-    }, 5000);
-    await signOut();
+    try {
+      await signOut();
 
-    toast.success("Logged out successfully!");
-    router.push("/sign-in");
-    setIsRedirecting(false);
+      toast.success("Logged out successfully!");
+      setIsRedirecting(true);
+
+      // Delay so the redirect UI shows
+      setTimeout(() => {
+        router.push("/sign-in");
+      }, 2000);
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Failed to log out. Please try again.");
+    }
   };
 
   return (

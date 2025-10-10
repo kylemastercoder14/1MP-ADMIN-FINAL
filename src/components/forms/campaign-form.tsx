@@ -401,7 +401,7 @@ const CampaignForm = ({
                   </FormLabel>
                   <FormControl>
                     <MultipleImageUpload
-                      maxImages={3}
+                      maxImages={2}
                       onImageUpload={(urls: string[]) => field.onChange(urls)}
                       disabled={isSubmitting}
                       defaultValues={field.value
@@ -412,11 +412,11 @@ const CampaignForm = ({
                           return ""; // or skip
                         })
                         .filter(Boolean)}
-                      bucket="assets"
+                      folder='admin/assets'
                     />
                   </FormControl>
                   <FormDescription>
-                    Upload 1 to 3 images in .png, .jpg, .jpeg, .webp format with
+                    Upload 1 to 2 images in .png, .jpg, .jpeg, .webp format with
                     a resolution of at least 100*100 px. The file must not be
                     bigger than 2 MB and the aspect ratio should be 1:1.
                   </FormDescription>
@@ -444,14 +444,13 @@ const CampaignForm = ({
                       onImageUpload={(url: string) => field.onChange(url)}
                       disabled={isSubmitting}
                       defaultValue={field.value || ""}
-                      bucket="assets"
+                      folder='admin/assets'
                     />
                   </FormControl>
                   <FormDescription>
-                    Upload 1 image in .png, .jpg, .jpeg, or .webp format with a
-                    resolution of at least 600×200 px. The file must not be
+                    Upload 1 image in .png, .jpg, .jpeg, or .webp format. The file must not be
                     bigger than 2 MB and the recommended aspect ratio is 3:1
-                    (wide rectangle, e.g. 1200×400 px).
+                    (wide rectangle, e.g. 873x100 px).
                   </FormDescription>
 
                   <FormMessage />

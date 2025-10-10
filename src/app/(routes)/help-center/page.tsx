@@ -1,9 +1,9 @@
 import React from "react";
 import Heading from "@/components/ui/heading";
-import { ChatSidebar } from './_components/chat-sidebar';
-import { ChatMain } from './_components/chat-main';
+import { mails } from './data';
+import { Mail } from './_components/mail';
 
-const Page = () => {
+const Page = async () => {
   return (
     <div>
       <div className="flex md:items-center items-start gap-3 md:flex-row flex-col justify-between mb-4">
@@ -13,9 +13,10 @@ const Page = () => {
         />
       </div>
       {/* Content here */}
-      <div className="flex h-screen mt-5">
-        <ChatSidebar />
-        <ChatMain />
+      <div className="h-screen rounded-md border">
+        <Mail
+          mails={mails}
+        />
       </div>
     </div>
   );

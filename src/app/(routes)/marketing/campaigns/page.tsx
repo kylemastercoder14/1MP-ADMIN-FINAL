@@ -7,7 +7,7 @@ import { ChevronRight } from "lucide-react";
 import CampaignForm from "@/components/forms/campaign-form";
 import Client from "./_components/client";
 import db from "@/lib/db";
-import { CampaignProps, ProductWithProps, ProductVariant } from "@/types"; // make sure these types exist
+import { CampaignProps, ProductWithProps, ProductVariant } from "@/types";
 
 const Page = async () => {
   const campaigns = await db.campaign.findMany({

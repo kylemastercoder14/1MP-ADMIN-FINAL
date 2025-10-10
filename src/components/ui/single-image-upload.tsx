@@ -5,26 +5,27 @@ import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { cn, ensureBlob } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { UploadCloud, Trash } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { uploadFile, deleteFile } from "@/lib/upload-s3";
+
+type SingleImageUploadProps = {
+  onImageUpload: (url: string) => void;
+  defaultValue?: string;
+  className?: string;
+  disabled?: boolean;
+  folder?: string; // folder inside S3 bucket
+};
 
 const SingleImageUpload = ({
   onImageUpload,
   defaultValue = "",
   className,
   disabled,
-  bucket = "vendors",
-  folder,
-}: {
-  onImageUpload: (url: string) => void;
-  defaultValue?: string;
-  className?: string;
-  disabled?: boolean;
-  bucket?: string;
-  folder?: string;
-}) => {
+  folder = "uploads",
+}: SingleImageUploadProps) => {
   const [imageUrl, setImageUrl] = useState<string>(defaultValue);
+  const [fileKey, setFileKey] = useState<string>(""); // track S3 key for deletion
   const [isUploading, setIsUploading] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -44,46 +45,6 @@ const SingleImageUpload = ({
       };
     }
   }, [defaultValue]);
-
-  const uploadToSupabase = async (file: File) => {
-    const supabase = createClient();
-    const client = await supabase;
-
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Math.random()
-      .toString(36)
-      .substring(2, 15)}.${fileExt}`;
-    const filePath = folder ? `${folder}/${fileName}` : fileName;
-
-    try {
-      setIsUploading(true);
-      const blob = await ensureBlob(file);
-
-      const { data: uploadData, error: uploadError } = await client.storage
-        .from(bucket)
-        .upload(filePath, blob, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: file.type,
-        });
-
-      if (uploadError) throw uploadError;
-      if (!uploadData) throw new Error("Upload failed: No data returned");
-
-      const {
-        data: { publicUrl },
-      } = client.storage.from(bucket).getPublicUrl(uploadData.path);
-
-      if (!publicUrl) throw new Error("Could not generate public URL");
-
-      return { url: publicUrl };
-    } catch (error) {
-      console.error("Upload error:", error);
-      throw error;
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -116,16 +77,23 @@ const SingleImageUpload = ({
       };
 
       try {
+        setIsUploading(true);
         toast.loading("Uploading image...");
-        const { url } = await uploadToSupabase(file);
+        const { url, key } = await uploadFile(file, folder, (progress) => {
+          console.log("Upload progress:", progress);
+        });
+
         setImageUrl(url);
+        setFileKey(key);
         onImageUpload(url);
+
         toast.success("Image uploaded successfully!");
       } catch (error) {
         console.error("Image upload error:", error);
         setImageUrl("");
         toast.error("Image upload failed. Please try again.");
       } finally {
+        setIsUploading(false);
         toast.dismiss();
       }
     },
@@ -139,23 +107,22 @@ const SingleImageUpload = ({
   });
 
   const handleRemoveImage = async () => {
-    if (!imageUrl) return;
+    if (!imageUrl || !fileKey) {
+      setImageUrl("");
+      onImageUpload("");
+      return;
+    }
 
     try {
-      const url = new URL(imageUrl);
-      const filePath = url.pathname.split(`${bucket}/`).pop();
-
-      if (filePath) {
-        const supabase = createClient();
-        const client = await supabase;
-        const { error } = await client.storage.from(bucket).remove([filePath]);
-        if (error) console.error("Error deleting file:", error);
-      }
+      await deleteFile(fileKey);
+      toast.success("Image removed successfully.");
     } catch (error) {
-      console.error("Error parsing URL:", error);
+      console.error("Error deleting image:", error);
+      toast.error("Failed to remove image.");
     }
 
     setImageUrl("");
+    setFileKey("");
     onImageUpload("");
   };
 

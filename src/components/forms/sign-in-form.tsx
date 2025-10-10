@@ -48,9 +48,6 @@ const SignInForm = () => {
   };
 
   const onSubmit = async (values: z.infer<typeof SigninValidators>) => {
-    setTimeout(() => {
-      setIsRedirecting(true);
-    }, 5000);
     try {
       const response = await signIn(values.email, values.password);
       if (!response.success) {
@@ -58,7 +55,13 @@ const SignInForm = () => {
         return;
       }
 
-      router.push("/dashboard");
+      // Show redirect UI
+      setIsRedirecting(true);
+
+      // Delay redirect for 2 seconds
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
     } catch (error: any) {
       console.error("Login failed:", error);
       let errorMessage = "Login failed. Please check your credentials.";
@@ -71,8 +74,6 @@ const SignInForm = () => {
       }
 
       toast.error(errorMessage);
-    } finally {
-      setIsRedirecting(false);
     }
   };
 

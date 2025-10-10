@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import db from "@/lib/db";
-import { createClient } from "@/lib/supabase/server";
 import { Policies, Product } from "@prisma/client";
 import { extractPathFromUrl, getDateRanges } from "@/lib/utils";
 import z from "zod";
@@ -25,6 +24,7 @@ import {
 import { cookies } from "next/headers";
 import * as jose from "jose";
 import { sendMail } from "@/lib/email";
+import { deleteFile } from "@/lib/upload-s3";
 
 export async function signIn(email: string, password: string) {
   try {
@@ -277,7 +277,7 @@ export const deleteProducts = async ({
       return { error: "No product IDs provided" };
     }
 
-    // Verify products exist (optional)
+    // Check if products exist
     const existingCount = await db.product.count({
       where: { id: { in: ids } },
     });
@@ -286,12 +286,7 @@ export const deleteProducts = async ({
       return { error: "No matching products found" };
     }
 
-    // Handle file deletions (Supabase storage)
-    const supabase = createClient();
-    const client = await supabase;
-    const filesToDelete: string[] = [];
-
-    // Only need product images/sizeChart since variants will cascade
+    // Get product images and variants
     const products = await db.product.findMany({
       where: { id: { in: ids } },
       select: {
@@ -302,6 +297,9 @@ export const deleteProducts = async ({
         },
       },
     });
+
+    // Collect all S3 keys to delete
+    const filesToDelete: string[] = [];
 
     products.forEach((product) => {
       // Main images
@@ -316,7 +314,7 @@ export const deleteProducts = async ({
         if (path) filesToDelete.push(path);
       }
 
-      // Variant images (if needed)
+      // Variant images
       product.variants?.forEach((variant) => {
         if (variant.image) {
           const path = extractPathFromUrl(variant.image);
@@ -325,18 +323,16 @@ export const deleteProducts = async ({
       });
     });
 
-    // Delete files from storage
-    if (filesToDelete.length > 0) {
-      const { error } = await client.storage
-        .from("products")
-        .remove(filesToDelete);
+    // Delete files from AWS S3 in parallel
+    await Promise.all(
+      filesToDelete.map(async (key) => {
+        const { success, message } = await deleteFile(key);
+        if (!success)
+          console.warn(`Failed to delete S3 file: ${key} - ${message}`);
+      })
+    );
 
-      if (error) {
-        console.error("File deletion error", error);
-      }
-    }
-
-    // Single delete operation - cascades will handle the rest
+    // Delete products from DB
     await db.product.deleteMany({
       where: { id: { in: ids } },
     });
