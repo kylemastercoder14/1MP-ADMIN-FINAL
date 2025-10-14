@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import { uploadFile, deleteFile } from "@/lib/upload-s3";
 type FileState = {
   id: string;
   url: string;
-  key?: string; // S3 key for deletion
+  key?: string;
   isUploading: boolean;
   isBlob?: boolean;
   file?: File;
@@ -40,10 +40,10 @@ const MultipleImageUpload = ({
   allowVideo = false,
 }: Props) => {
   const [files, setFiles] = useState<FileState[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
+  const prevCompleted = useRef<string[]>([]);
 
+  // Load default values once
   useEffect(() => {
-    setIsMounted(true);
     if (defaultValues.length > 0) {
       setFiles(
         defaultValues.map((url) => ({
@@ -56,83 +56,71 @@ const MultipleImageUpload = ({
     }
   }, [defaultValues]);
 
-  const updateParent = useCallback(
-    (updatedFiles: FileState[]) => {
-      const completedUrls = updatedFiles
-        .filter((f) => !f.isUploading && !f.isBlob)
-        .map((f) => f.url);
-      onImageUpload(completedUrls);
+  // Update parent only when completed URLs actually change
+  useEffect(() => {
+    const completed = files.filter((f) => !f.isUploading).map((f) => f.url).sort();
+    const prev = JSON.stringify(prevCompleted.current);
+    const next = JSON.stringify(completed);
+    if (prev !== next) {
+      onImageUpload(completed);
+      prevCompleted.current = completed;
+    }
+  }, [files, onImageUpload]);
+
+  const processBatchUpload = useCallback(
+    async (batchFiles: FileState[]) => {
+      const uploads = batchFiles.map(async (fileItem) => {
+        const file = fileItem.file!;
+        const toastId = toast.loading(`Uploading ${file.name}...`);
+        try {
+          const { url, key } = await uploadFile(file, folder);
+          toast.success(`${file.name} uploaded!`, { id: toastId });
+          return { ...fileItem, url, key, isUploading: false, isBlob: false };
+        } catch (error) {
+          console.error(error)
+          toast.error(`Failed to upload ${file.name}`, { id: toastId });
+          return null;
+        }
+      });
+
+      const results = await Promise.all(uploads);
+      const validResults = results.filter(Boolean) as FileState[];
+      setFiles((prev) => [
+        ...prev.map((f) =>
+          batchFiles.some((b) => b.id === f.id)
+            ? validResults.find((r) => r.id === f.id) || f
+            : f
+        ),
+        ...validResults.filter((r) => !prev.some((p) => p.id === r.id)),
+      ]);
     },
-    [onImageUpload]
-  );
-
-  const processFileUpload = useCallback(
-    async (file: File, fileId: string) => {
-      const toastId = toast.loading(`Uploading ${file.name}...`);
-
-      try {
-        const { url, key } = await uploadFile(file, folder, (progress) => {
-          console.log(`${file.name} progress:`, progress);
-        });
-
-        setFiles((prevFiles) => {
-          const updated = prevFiles.map((f) =>
-            f.id === fileId
-              ? { ...f, url, key, isUploading: false, isBlob: false }
-              : f
-          );
-          updateParent(updated);
-          return updated;
-        });
-
-        toast.success(`Uploaded ${file.name}`, { id: toastId });
-      } catch (error) {
-        console.error("Upload failed:", error);
-
-        setFiles((prevFiles) => {
-          const updated = prevFiles.filter((f) => f.id !== fileId);
-          updateParent(updated);
-          return updated;
-        });
-
-        toast.error(`Failed to upload ${file.name}`, { id: toastId });
-      }
-    },
-    [updateParent, folder]
+    [folder]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: allowVideo
       ? {
-          "image/png": [".png"],
-          "image/jpg": [".jpg", ".jpeg"],
-          "image/webp": [".webp"],
-          "image/svg+xml": [".svg"],
+          "image/*": [],
           "video/mp4": [".mp4"],
         }
-      : {
-          "image/png": [".png"],
-          "image/jpg": [".jpg", ".jpeg"],
-          "image/webp": [".webp"],
-          "image/svg+xml": [".svg"],
-        },
+      : { "image/*": [] },
     maxFiles: maxImages,
     onDrop: async (acceptedFiles) => {
-      if (!isMounted || disabled) return;
+      if (disabled) return;
 
-      const sizeErrors = acceptedFiles.filter(
-        (file) => file.size > 20 * 1024 * 1024
-      );
       if (files.length + acceptedFiles.length > maxImages) {
         toast.error(`Maximum ${maxImages} files allowed`);
         return;
       }
-      if (sizeErrors.length > 0) {
-        toast.error(`${sizeErrors.length} file(s) exceed 20MB limit`);
+
+      const tooLarge = acceptedFiles.filter((f) => f.size > 20 * 1024 * 1024);
+      if (tooLarge.length > 0) {
+        toast.error(`${tooLarge.length} file(s) exceed 20MB limit`);
         return;
       }
 
-      const newFiles = acceptedFiles.map((file) => ({
+      // Create new files and show preview immediately
+      const newFileStates = acceptedFiles.map((file) => ({
         id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         url: URL.createObjectURL(file),
         isUploading: true,
@@ -140,93 +128,54 @@ const MultipleImageUpload = ({
         file,
       }));
 
-      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+      setFiles((prev) => [...prev, ...newFileStates]);
 
-      await Promise.allSettled(
-        newFiles.map((newFile) => processFileUpload(newFile.file!, newFile.id))
-      );
-
-      newFiles.forEach((file) => {
-        if (file.isBlob) {
-          URL.revokeObjectURL(file.url);
-        }
-      });
+      // Batch upload
+      processBatchUpload(newFileStates);
     },
   });
 
   const handleRemove = useCallback(
     async (index: number) => {
-      if (index < 0 || index >= files.length) return;
-
-      const fileToRemove = files[index];
-      if (fileToRemove.isUploading) {
-        toast.warning("File is still uploading");
+      const target = files[index];
+      if (!target) return;
+      if (target.isUploading) {
+        toast.warning("Please wait until the upload completes");
         return;
       }
 
-      if (fileToRemove.isBlob) {
-        URL.revokeObjectURL(fileToRemove.url);
-      }
-
-      if (fileToRemove.key) {
+      if (target.key) {
         try {
-          await deleteFile(fileToRemove.key);
+          await deleteFile(target.key);
           toast.success("File deleted from S3");
-        } catch (error) {
-          console.error("Error deleting file:", error);
-          toast.error("Failed to delete file from S3");
+        } catch {
+          toast.error("Failed to delete from S3");
         }
       }
 
-      setFiles((prevFiles) => {
-        const updatedFiles = prevFiles.filter((_, i) => i !== index);
-        updateParent(updatedFiles);
-        return updatedFiles;
-      });
+      if (target.isBlob) URL.revokeObjectURL(target.url);
+
+      setFiles((prev) => prev.filter((_, i) => i !== index));
     },
-    [files, updateParent]
+    [files]
   );
 
-  const handleDragEnd = useCallback(
-    (result: any) => {
-      if (!result.destination) return;
+  const handleDragEnd = useCallback((result: any) => {
+    if (!result.destination) return;
+    setFiles((prev) => {
+      const reordered = [...prev];
+      const [moved] = reordered.splice(result.source.index, 1);
+      reordered.splice(result.destination.index, 0, moved);
+      return reordered;
+    });
+  }, []);
 
-      setFiles((prevFiles) => {
-        const items = [...prevFiles];
-        const [moved] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, moved);
-        updateParent(items);
-        return items;
-      });
-    },
-    [updateParent]
-  );
-
+  // cleanup
   useEffect(() => {
     return () => {
-      files.forEach((file) => {
-        if (file.isBlob) {
-          URL.revokeObjectURL(file.url);
-        }
-      });
+      files.forEach((f) => f.isBlob && URL.revokeObjectURL(f.url));
     };
   }, [files]);
-
-  if (!isMounted) {
-    return (
-      <div className={cn("flex items-center gap-3 flex-wrap", className)}>
-        {defaultValues.map((_, index) => (
-          <div
-            key={`placeholder-${index}`}
-            className="relative bg-zinc-100 w-32 h-[120px] rounded-md overflow-hidden border border-input"
-          />
-        ))}
-        {defaultValues.length < maxImages && (
-          <div className="w-32 h-[120px] border-[2px] rounded-md border-dashed border-input" />
-        )}
-      </div>
-    );
-  }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
@@ -238,12 +187,7 @@ const MultipleImageUpload = ({
             className={cn("flex items-center gap-3 flex-wrap", className)}
           >
             {files.map((file, index) => (
-              <Draggable
-                key={file.id}
-                draggableId={file.id}
-                index={index}
-                isDragDisabled={file.isUploading}
-              >
+              <Draggable key={file.id} draggableId={file.id} index={index}>
                 {(provided) => (
                   <div
                     ref={provided.innerRef}
@@ -282,7 +226,7 @@ const MultipleImageUpload = ({
                         />
                       ) : (
                         <img
-                          src={file.url || ""}
+                          src={file.url}
                           alt={`Uploaded ${index + 1}`}
                           className="object-cover w-full h-full"
                         />
@@ -302,7 +246,7 @@ const MultipleImageUpload = ({
             {files.length < maxImages && (
               <div
                 {...getRootProps({
-                  className: `w-32 h-[120px] border-[2px] rounded-md border-dashed border-input flex items-center justify-center flex-col ${
+                  className: `w-32 h-[120px] border-[2px] rounded-md border-dashed border-input flex flex-col items-center justify-center ${
                     disabled
                       ? "pointer-events-none opacity-50 cursor-not-allowed"
                       : "cursor-pointer"
@@ -317,6 +261,7 @@ const MultipleImageUpload = ({
                 </p>
               </div>
             )}
+
             {provided.placeholder}
           </div>
         )}
