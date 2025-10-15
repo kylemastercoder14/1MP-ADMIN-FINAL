@@ -2,7 +2,7 @@ import React from "react";
 import db from "@/lib/db";
 import Heading from "@/components/ui/heading";
 import { SellerWithProps, VariantAttributes } from "@/types";
-import SellerClient from './_components/seller-client';
+import SellerClient from "./_components/seller-client";
 
 const Page = async () => {
   const data = await db.vendor.findMany({
@@ -49,7 +49,7 @@ const Page = async () => {
         />
       </div>
       <div className="mt-5">
-		<SellerClient data={vendors} />
+        <SellerClient data={vendors} />
       </div>
     </div>
   );

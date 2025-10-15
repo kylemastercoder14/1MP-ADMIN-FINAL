@@ -266,7 +266,7 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                 <div className="text-center col-span-full py-12">
                   <div className="flex flex-col items-center justify-center space-y-4">
                     <Image
-                      src="/images/empty-products.svg"
+                      src="/images/empty.svg"
                       alt="No products found"
                       width={200}
                       height={200}
@@ -310,7 +310,7 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
               <div className="text-center py-12">
                 <div className="flex flex-col items-center justify-center space-y-4">
                   <Image
-                    src="/images/empty-products.svg"
+                    src="/images/empty.svg"
                     alt="No policies found"
                     width={200}
                     height={200}
@@ -352,7 +352,7 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
               <div className="text-center py-12">
                 <div className="flex flex-col items-center justify-center space-y-4">
                   <Image
-                    src="/images/empty-products.svg"
+                    src="/images/empty.svg"
                     alt="No FAQs found"
                     width={200}
                     height={200}
@@ -567,7 +567,7 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                 <div className="flex items-center space-x-2">
                   <p className="text-base text-gray-500">Rating:</p>
                   <p className="font-medium text-base text-[#800020]">
-                    4.9 (216 Rating)
+                    0 (0 Rating)
                   </p>
                 </div>
               </div>
@@ -646,7 +646,7 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                   <p className="text-base text-gray-500">Business Permit:</p>
                   <span className="font-medium text-base text-[#800020]">
                     {vendor?.barangayBusinessPermit
-                      ? vendor.barangayBusinessPermit.split("/").pop()
+                      ? "BIR"
                       : "N/A"}
                   </span>
                   <IconShare2

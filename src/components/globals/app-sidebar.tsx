@@ -11,6 +11,7 @@ import {
   FileText,
   Store,
   Settings,
+  Truck,
 } from "lucide-react";
 
 import { NavMain } from "@/components/globals/nav-main";
@@ -63,6 +64,11 @@ const data = {
       title: "Customers",
       url: "/customers",
       icon: Users,
+    },
+    {
+      title: "Riders",
+      url: "/riders",
+      icon: Truck,
     },
     {
       title: "Marketing Tools",
