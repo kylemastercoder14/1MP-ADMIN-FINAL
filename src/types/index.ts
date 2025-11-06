@@ -48,6 +48,7 @@ export interface ProductWithProps extends Product {
   category: Category | null;
   subCategory: SubCategory | null;
   nutritionalFacts?: NutritionalFact[];
+  productReview?: { id: string; rating: number }[];
 }
 
 export interface SellerWithProps extends Vendor {
@@ -56,6 +57,21 @@ export interface SellerWithProps extends Vendor {
   coupon?: Coupon[] | null;
   vendorPolicies?: VendorPolicies[] | null;
   vendorFaqs?: VendorFaqs[] | null;
+  vendorReview?: {
+    id: string;
+    rating: number;
+    review: string;
+    images: string[];
+    isAnonymous: boolean;
+    createdAt: Date;
+    user: {
+      id: string;
+      firstName: string | null;
+      lastName: string | null;
+      image: string | null;
+      email: string;
+    };
+  }[];
 }
 
 export interface CustomerWithOrder extends User {

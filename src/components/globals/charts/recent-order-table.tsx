@@ -9,9 +9,61 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+interface RecentOrder {
+  id: string;
+  orderNumber: string;
+  store: {
+    name: string;
+    businessType: string;
+  };
+  items: number;
+  price: number;
+  status: string;
+  paymentStatus: string;
+  createdAt: Date;
+}
 
-const RecentOrderTable = () => {
+interface RecentOrderTableProps {
+  orders: RecentOrder[];
+}
+
+const RecentOrderTable = ({ orders }: RecentOrderTableProps) => {
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "completed":
+      case "delivered":
+        return "bg-green-600";
+      case "processing":
+      case "shipped":
+      case "out for delivery":
+        return "bg-blue-600";
+      case "pending":
+        return "bg-yellow-600";
+      case "cancelled":
+        return "bg-red-600";
+      default:
+        return "bg-gray-600";
+    }
+  };
+
+  const formatDate = (date: Date) => {
+    const d = new Date(date);
+    return d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const formatTime = (date: Date) => {
+    const d = new Date(date);
+    return d.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
   return (
     <div>
       <h3 className="leading-none font-semibold mb-4">Recent Orders</h3>
@@ -19,7 +71,6 @@ const RecentOrderTable = () => {
         <TableHeader className="bg-muted sticky top-0 z-10">
           <TableRow>
             <TableHead>Order ID</TableHead>
-            <TableHead>Customer</TableHead>
             <TableHead>Store</TableHead>
             <TableHead>Items</TableHead>
             <TableHead>Price</TableHead>
@@ -28,191 +79,41 @@ const RecentOrderTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell>#7823</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>A</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-medium text-sm">Kyle Andre Lim</h3>
-                  <p className="text-xs w-30 truncate text-muted-foreground">
-                    kylemastercoder14@gmail.com
-                  </p>
-                </div>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div>
-                  <h3 className="font-medium text-sm">Sip of Glory</h3>
-                  <p className="text-xs text-muted-foreground">Coffee Shop</p>
-                </div>
-            </TableCell>
-            <TableCell>6</TableCell>
-            <TableCell>₱527.54</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-green-600"></div>
-                <span className="text-green-600 text-sm">Completed</span>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div>
-                <h3 className="text-sm font-medium">Sept 5, 2025</h3>
-                <p className="text-xs text-muted-foreground">10:12 AM</p>
-              </div>
-            </TableCell>
-          </TableRow>
-		  <TableRow>
-            <TableCell>#7823</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>A</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-medium text-sm">Kyle Andre Lim</h3>
-                  <p className="text-xs w-30 truncate text-muted-foreground">
-                    kylemastercoder14@gmail.com
-                  </p>
-                </div>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div>
-                  <h3 className="font-medium text-sm">Sip of Glory</h3>
-                  <p className="text-xs text-muted-foreground">Coffee Shop</p>
-                </div>
-            </TableCell>
-            <TableCell>6</TableCell>
-            <TableCell>₱527.54</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-green-600"></div>
-                <span className="text-green-600 text-sm">Completed</span>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div>
-                <h3 className="text-sm font-medium">Sept 5, 2025</h3>
-                <p className="text-xs text-muted-foreground">10:12 AM</p>
-              </div>
-            </TableCell>
-          </TableRow>
-		  <TableRow>
-            <TableCell>#7823</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>A</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-medium text-sm">Kyle Andre Lim</h3>
-                  <p className="text-xs w-30 truncate text-muted-foreground">
-                    kylemastercoder14@gmail.com
-                  </p>
-                </div>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div>
-                  <h3 className="font-medium text-sm">Sip of Glory</h3>
-                  <p className="text-xs text-muted-foreground">Coffee Shop</p>
-                </div>
-            </TableCell>
-            <TableCell>6</TableCell>
-            <TableCell>₱527.54</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-blue-600"></div>
-                <span className="text-blue-600 text-sm">Processing</span>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div>
-                <h3 className="text-sm font-medium">Sept 5, 2025</h3>
-                <p className="text-xs text-muted-foreground">10:12 AM</p>
-              </div>
-            </TableCell>
-          </TableRow>
-		  <TableRow>
-            <TableCell>#7823</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>A</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-medium text-sm">Kyle Andre Lim</h3>
-                  <p className="text-xs w-30 truncate text-muted-foreground">
-                    kylemastercoder14@gmail.com
-                  </p>
-                </div>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div>
-                  <h3 className="font-medium text-sm">Sip of Glory</h3>
-                  <p className="text-xs text-muted-foreground">Coffee Shop</p>
-                </div>
-            </TableCell>
-            <TableCell>6</TableCell>
-            <TableCell>₱527.54</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-yellow-600"></div>
-                <span className="text-yellow-600 text-sm">Pending</span>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div>
-                <h3 className="text-sm font-medium">Sept 5, 2025</h3>
-                <p className="text-xs text-muted-foreground">10:12 AM</p>
-              </div>
-            </TableCell>
-          </TableRow>
-		  <TableRow>
-            <TableCell>#7823</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>A</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-medium text-sm">Kyle Andre Lim</h3>
-                  <p className="text-xs w-30 truncate text-muted-foreground">
-                    kylemastercoder14@gmail.com
-                  </p>
-                </div>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div>
-                  <h3 className="font-medium text-sm">Sip of Glory</h3>
-                  <p className="text-xs text-muted-foreground">Coffee Shop</p>
-                </div>
-            </TableCell>
-            <TableCell>6</TableCell>
-            <TableCell>₱527.54</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-red-600"></div>
-                <span className="text-red-600 text-sm">Cancelled</span>
-              </div>
-            </TableCell>
-            <TableCell>
-              <div>
-                <h3 className="text-sm font-medium">Sept 5, 2025</h3>
-                <p className="text-xs text-muted-foreground">10:12 AM</p>
-              </div>
-            </TableCell>
-          </TableRow>
+          {orders.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                No recent orders found
+              </TableCell>
+            </TableRow>
+          ) : (
+            orders.map((order) => (
+              <TableRow key={order.id}>
+                <TableCell className='truncate max-w-40'>#{order.orderNumber}</TableCell>
+                <TableCell>
+                  <div>
+                    <h3 className="font-medium text-sm">{order.store.name}</h3>
+                    <p className="text-xs text-muted-foreground">{order.store.businessType}</p>
+                  </div>
+                </TableCell>
+                <TableCell>{order.items}</TableCell>
+                <TableCell>₱{Number(order.price).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <div className={`size-2 rounded-full ${getStatusColor(order.status)}`}></div>
+                    <span className={`text-sm ${getStatusColor(order.status).replace("bg-", "text-")}`}>
+                      {order.status}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div>
+                    <h3 className="text-sm font-medium">{formatDate(order.createdAt)}</h3>
+                    <p className="text-xs text-muted-foreground">{formatTime(order.createdAt)}</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

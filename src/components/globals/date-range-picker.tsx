@@ -68,7 +68,7 @@ export function DateRangePicker({
           {getLabel()}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" side='left' align="start">
+      <PopoverContent className="w-auto p-0" side='bottom' align="end">
         {multiple ? (
           <Calendar
             initialFocus

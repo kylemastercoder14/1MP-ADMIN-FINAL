@@ -2,7 +2,8 @@
 
 import React, { useMemo, useState } from "react";
 import { ProductWithProps } from "@/types";
-import { ArrowLeft, ShieldCheck, Star, WalletMinimal } from "lucide-react";
+import { ArrowLeft, ShieldCheck, WalletMinimal } from "lucide-react";
+import { IconStarFilled, IconStarHalfFilled, IconStar } from "@tabler/icons-react";
 import ProductImages from "@/components/globals/product-images";
 import {
   calculateDiscountPrice,
@@ -37,6 +38,32 @@ const Client = ({ data }: { data: ProductWithProps | null }) => {
   const discounts = data ? getDiscountInfo(data) : [];
   const hasDiscount = discounts.length > 0;
   const discountPrice = calculateDiscountPrice(price, discounts);
+
+  // Calculate rating and review count
+  const reviewCount = data?.productReview?.length || 0;
+  const averageRating = data?.averageRating || 0;
+
+  // Render stars based on rating
+  const renderStars = (rating: number) => {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+    return (
+      <div className="flex items-center gap-1">
+        {Array.from({ length: fullStars }).map((_, i) => (
+          <IconStarFilled key={`full-${i}`} className="size-4 text-yellow-500" />
+        ))}
+        {hasHalfStar && (
+          <IconStarHalfFilled className="size-4 text-yellow-500" />
+        )}
+        {Array.from({ length: emptyStars }).map((_, i) => (
+          <IconStar key={`empty-${i}`} className="size-4 text-yellow-500 fill-yellow-500/20" />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="grid lg:grid-cols-10 grid-cols-1 gap-5">
       <div className="lg:col-span-6 bg-white p-4 rounded-md border">
@@ -50,20 +77,33 @@ const Client = ({ data }: { data: ProductWithProps | null }) => {
         </div>
         <div className="flex items-center gap-3 text-gray-500 mb-4">
           <div className="flex items-center gap-1">
-            <Star className={`size-4 fill-current text-yellow-500`} />
-            <Star className={`size-4 fill-current text-yellow-500`} />
-            <Star className={`size-4 fill-current text-yellow-500`} />
-            <Star className={`size-4 fill-current text-yellow-500`} />
-            <Star className={`size-4 fill-half text-yellow-500`} />
-            <span className="text-gray-500">4.9</span>
+            {reviewCount > 0 ? (
+              <>
+                {renderStars(averageRating)}
+                <span className="text-gray-500">{averageRating.toFixed(1)}</span>
+              </>
+            ) : (
+              <>
+                <IconStar className="size-4 text-gray-300" />
+                <IconStar className="size-4 text-gray-300" />
+                <IconStar className="size-4 text-gray-300" />
+                <IconStar className="size-4 text-gray-300" />
+                <IconStar className="size-4 text-gray-300" />
+                <span className="text-gray-400">No ratings yet</span>
+              </>
+            )}
           </div>
-          <p>|</p>
-          <span className="text-muted-foreground">
-            Reviews{" "}
-            <span className="text-gray-600 font-medium">
-              {Math.floor(Math.random() * 2000) + 10}
-            </span>
-          </span>
+          {reviewCount > 0 && (
+            <>
+              <p>|</p>
+              <span className="text-muted-foreground">
+                Reviews{" "}
+                <span className="text-gray-600 font-medium">
+                  {reviewCount}
+                </span>
+              </span>
+            </>
+          )}
         </div>
         <ProductImages images={data?.images || []} video={data?.video || ""} />
       </div>

@@ -49,7 +49,16 @@ const Page = async () => {
 
   return (
     <div>
-      <h3 className="text-2xl tracking-tight font-bold mb-3">Campaigns</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-2xl tracking-tight font-bold">Campaigns</h3>
+        <Link
+          href="/marketing/campaigns/products"
+          className="flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+        >
+          View Campaign Products
+          <ChevronRight className="size-4" />
+        </Link>
+      </div>
       <Tabs defaultValue="create">
         <TabsList>
           <TabsTrigger value="create">Register for campaigns</TabsTrigger>

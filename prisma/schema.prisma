@@ -99,6 +99,7 @@ model User {
   followStore   FollowStore[]
   ticket        Ticket[]
   productReview ProductReview[]
+  vendorReview  VendorReview[]
 }
 
 model Address {
@@ -206,6 +207,7 @@ model Vendor {
   campaigns                Campaign[]
   ticket                   Ticket[]
   campaignProduct          CampaignProduct[]
+  vendorReview             VendorReview[]
 }
 
 model VendorAddress {
@@ -947,4 +949,23 @@ model ProductReview {
 
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model VendorReview {
+  id          String   @id @default(cuid())
+  rating      Int
+  review      String
+  images      String[]
+  isAnonymous Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vendorId String
+  vendor   Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@index([userId])
 }

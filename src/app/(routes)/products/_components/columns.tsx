@@ -67,7 +67,7 @@ export const columns: ColumnDef<ProductWithProps>[] = [
         <div className="flex items-center group gap-2">
           <div className="relative w-[40px] h-[40px]">
             <Image
-              className="w-full h-full rounded-md object-contain"
+              className="w-full h-full rounded-md object-cover"
               fill
               alt={row.original.name}
               src={row.original.images[0]}

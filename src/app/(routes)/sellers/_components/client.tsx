@@ -31,15 +31,31 @@ import {
   IconStar,
   IconUsers,
   IconWallet,
+  IconStarFilled,
+  IconStarHalfFilled,
 } from "@tabler/icons-react";
-import { formatDistanceToNowStrict } from "date-fns";
+import { formatDistanceToNowStrict, format } from "date-fns";
 import useCountdown from "@/hooks/use-countdown";
 import { calculateDiscountPrice, getDiscountInfo } from "@/lib/utils";
 import ProductCard from "@/components/globals/product-card";
 import ImageZoom from "@/components/globals/image-zoom";
 import Link from "next/link";
+import { ChatWrapper } from "./chat-wrapper";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
+const Client = ({
+  vendor,
+  followersCount,
+  averageRating,
+  totalReviews,
+  totalSold
+}: {
+  vendor: SellerWithProps | null;
+  followersCount: number;
+  averageRating: number;
+  totalReviews: number;
+  totalSold: number;
+}) => {
   const [activeTab, setActiveTab] = useState<IItem["value"]>("Products");
   const [chatPerformance, setChatPerformance] =
     React.useState<ChatPerformanceData | null>(null);
@@ -49,12 +65,12 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
   });
   const [isLoadingChatPerformance, setIsLoadingChatPerformance] =
     React.useState(true);
+  const [isChatOpen, setIsChatOpen] = React.useState(false);
 
   const isOnline = true;
   const statusText = "Online";
   const isLoadingFollow = false;
   const isFollowing = false;
-  const followersCount = 25;
   const isLoadingVendor = false;
 
   React.useEffect(() => {
@@ -67,7 +83,7 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
     const fetchChatPerformanceData = async () => {
       try {
         const response = await fetch(
-          `/api/v1/vendor/${vendor?.id}/chat-performance`
+          `https://onemarketphilippines.com/api/v1/vendor/${vendor?.id}/chat-performance`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch chat performance data.");
@@ -250,6 +266,7 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                     price,
                     discounts
                   );
+
                   return (
                     <ProductCard
                       key={product.id}
@@ -371,7 +388,138 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
       case "Reviews":
         return (
           <div className="pt-10">
-            <h3 className="text-xl font-bold tracking-tight">Reviews</h3>
+            <h3 className="text-xl font-bold tracking-tight mb-5">Reviews</h3>
+            {isLoadingVendor ? (
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="border rounded-lg p-4">
+                    <Skeleton className="h-6 w-48 mb-2" />
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                ))}
+              </div>
+            ) : vendor?.vendorReview && vendor.vendorReview.length > 0 ? (
+              <div className="space-y-4">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {vendor.vendorReview.map((review: any) => {
+                  const fullStars = Math.floor(review.rating);
+                  const hasHalfStar = review.rating % 1 >= 0.5;
+                  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                  const reviewerName = review.isAnonymous
+                    ? "Anonymous"
+                    : review.user.firstName && review.user.lastName
+                      ? `${review.user.firstName} ${review.user.lastName}`
+                      : review.user.email.split("@")[0];
+
+                  return (
+                    <div
+                      key={review.id}
+                      className="border rounded-lg p-4 bg-white shadow-sm"
+                    >
+                      <div className="flex items-start gap-4">
+                        <Avatar className="size-10">
+                          <AvatarImage
+                            src={
+                              review.isAnonymous
+                                ? undefined
+                                : review.user.image || undefined
+                            }
+                            alt={reviewerName}
+                          />
+                          <AvatarFallback>
+                            {review.isAnonymous
+                              ? "A"
+                              : reviewerName.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <p className="font-semibold text-base">
+                                {reviewerName}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <div className="flex items-center gap-0.5">
+                                  {Array.from({ length: fullStars }).map(
+                                    (_, i) => (
+                                      <IconStarFilled
+                                        key={`full-${i}`}
+                                        className="size-4 text-yellow-500"
+                                      />
+                                    )
+                                  )}
+                                  {hasHalfStar && (
+                                    <IconStarHalfFilled className="size-4 text-yellow-500" />
+                                  )}
+                                  {Array.from({ length: emptyStars }).map(
+                                    (_, i) => (
+                                      <IconStar
+                                        key={`empty-${i}`}
+                                        className="size-4 text-yellow-500 fill-yellow-500/20"
+                                      />
+                                    )
+                                  )}
+                                </div>
+                                <span className="text-sm text-muted-foreground">
+                                  {format(
+                                    new Date(review.createdAt),
+                                    "MMM d, yyyy"
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">
+                            {review.review}
+                          </p>
+                          {review.images && review.images.length > 0 && (
+                            <div className="grid grid-cols-4 gap-2 mt-3">
+                              {review.images.map((image: string, index: number) => (
+                                <div
+                                  key={index}
+                                  className="relative h-20 w-full rounded-md overflow-hidden cursor-pointer border"
+                                  onClick={() =>
+                                    setOpenAttachment({
+                                      toggle: true,
+                                      data: image,
+                                    })
+                                  }
+                                >
+                                  <Image
+                                    src={image}
+                                    alt={`Review image ${index + 1}`}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="flex flex-col items-center justify-center space-y-4">
+                  <Image
+                    src="/images/empty.svg"
+                    alt="No reviews found"
+                    width={200}
+                    height={200}
+                  />
+                  <h3 className="text-xl font-medium text-gray-700">
+                    No reviews available
+                  </h3>
+                  <p className="text-gray-500">
+                    This vendor hasn&apos;t received any reviews yet.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         );
     }
@@ -472,6 +620,7 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                   </Button>
                   <Button
                     variant="ghost"
+                    onClick={() => setIsChatOpen(true)}
                     className="flex cursor-pointer flex-1 rounded-none justify-center items-center space-x-1 text-white hover:text-black px-3 py-1 bg-transparent border border-white text-sm hover:bg-accent transition-colors"
                   >
                     <FaComments className="text-xs" />
@@ -515,7 +664,7 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                 <div className="flex items-center space-x-2">
                   <p className="text-base text-gray-500">Followers:</p>
                   <p className="font-medium text-base text-[#800020]">
-                    {followersCount}
+                    {followersCount ?? 0}
                   </p>
                 </div>
               </div>
@@ -558,7 +707,7 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                 <div className="flex items-center space-x-2">
                   <p className="text-base text-gray-500">Sold:</p>
                   <p className="font-medium text-base text-[#800020]">
-                    {vendor?.orderItem?.length || 0}
+                    {(totalSold ?? 0).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -567,7 +716,9 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                 <div className="flex items-center space-x-2">
                   <p className="text-base text-gray-500">Rating:</p>
                   <p className="font-medium text-base text-[#800020]">
-                    0 (0 Rating)
+                    {(totalReviews ?? 0) > 0
+                      ? `${(averageRating ?? 0).toFixed(1)} (${totalReviews} ${totalReviews === 1 ? 'Rating' : 'Ratings'})`
+                      : "0 (0 Ratings)"}
                   </p>
                 </div>
               </div>
@@ -608,17 +759,19 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                 <div className="flex items-center space-x-2">
                   <p className="text-base text-gray-500">Valid ID:</p>
                   <span className="font-medium text-base text-[#800020]">
-                    {vendor?.identityType}
+                    {vendor?.identityType || "N/A"}
                   </span>
-                  <IconShare2
-                    onClick={() =>
-                      setOpenAttachment({
-                        toggle: !openAttachment.toggle,
-                        data: vendor?.identity as string,
-                      })
-                    }
-                    className="text-gray-500 size-4 cursor-pointer"
-                  />
+                  {vendor?.identity && (
+                    <IconShare2
+                      onClick={() =>
+                        setOpenAttachment({
+                          toggle: !openAttachment.toggle,
+                          data: vendor.identity as string,
+                        })
+                      }
+                      className="text-gray-500 size-4 cursor-pointer hover:text-gray-700"
+                    />
+                  )}
                 </div>
               </div>
               <div className="flex items-center space-x-2">
@@ -626,17 +779,19 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                 <div className="flex items-center space-x-2">
                   <p className="text-base text-gray-500">BIR:</p>
                   <span className="font-medium text-base text-[#800020]">
-                    {vendor?.bir ? vendor.bir.split("/").pop() : "N/A"}
+                    {vendor?.bir ? "BIR" : "N/A"}
                   </span>
-                  <IconShare2
-                    onClick={() =>
-                      setOpenAttachment({
-                        toggle: !openAttachment.toggle,
-                        data: vendor?.bir as string,
-                      })
-                    }
-                    className="text-gray-500 size-4 cursor-pointer"
-                  />
+                  {vendor?.bir && (
+                    <IconShare2
+                      onClick={() =>
+                        setOpenAttachment({
+                          toggle: !openAttachment.toggle,
+                          data: vendor.bir as string,
+                        })
+                      }
+                      className="text-gray-500 size-4 cursor-pointer hover:text-gray-700"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -646,18 +801,20 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
                   <p className="text-base text-gray-500">Business Permit:</p>
                   <span className="font-medium text-base text-[#800020]">
                     {vendor?.barangayBusinessPermit
-                      ? "BIR"
+                      ? "Business Permit"
                       : "N/A"}
                   </span>
-                  <IconShare2
-                    onClick={() =>
-                      setOpenAttachment({
-                        toggle: !openAttachment.toggle,
-                        data: vendor?.barangayBusinessPermit as string,
-                      })
-                    }
-                    className="text-gray-500 size-4 cursor-pointer"
-                  />
+                  {vendor?.barangayBusinessPermit && (
+                    <IconShare2
+                      onClick={() =>
+                        setOpenAttachment({
+                          toggle: !openAttachment.toggle,
+                          data: vendor.barangayBusinessPermit as string,
+                        })
+                      }
+                      className="text-gray-500 size-4 cursor-pointer hover:text-gray-700"
+                    />
+                  )}
                 </div>
               </div>
             </>
@@ -666,6 +823,11 @@ const Client = ({ vendor }: { vendor: SellerWithProps | null }) => {
       </div>
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
       <div className="pb-20">{renderContent()}</div>
+
+      <ChatWrapper
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+      />
     </>
   );
 };

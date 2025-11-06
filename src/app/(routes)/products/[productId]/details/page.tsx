@@ -19,6 +19,12 @@ const Page = async (props: {
       productDiscount: true,
       newArrivalDiscount: true,
       specifications: true,
+      productReview: {
+        select: {
+          id: true,
+          rating: true,
+        },
+      },
     },
   });
 

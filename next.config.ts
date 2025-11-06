@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
       "upload.wikimedia.org",
       "one-market-philippines.s3.ap-southeast-2.amazonaws.com",
       "one-market-phil.s3.us-east-1.amazonaws.com",
+      "lh3.googleusercontent.com",
+      "platform-lookaside.fbsbx.com",
     ],
   },
   eslint: {

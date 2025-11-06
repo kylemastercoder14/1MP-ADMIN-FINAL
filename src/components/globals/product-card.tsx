@@ -6,6 +6,11 @@ import Image from "next/image";
 import { SetStateAction, useState } from "react";
 import { Lens } from "@/components/globals/lens";
 import { useRouter } from "next/navigation";
+import {
+  IconStarFilled,
+  IconStarHalfFilled,
+  IconStar,
+} from "@tabler/icons-react";
 
 const ProductCard = ({
   product,
@@ -200,9 +205,44 @@ const ProductCard = ({
           <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
             <span className="font-medium">{product.soldCount} sold</span>
             <div className="flex items-center gap-1">
-              {/* You have static stars here, consider dynamic rendering based on product.averageRating */}
-              <div className="flex text-yellow-400">{"★".repeat(5)}</div>
-              <span className="text-gray-500">(256)</span>
+              {(() => {
+                const reviewCount = product.productReview?.length || 0;
+                const averageRating = product.averageRating || 0;
+
+                if (reviewCount > 0) {
+                  const fullStars = Math.floor(averageRating);
+                  const hasHalfStar = averageRating % 1 >= 0.5;
+                  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+                  return (
+                    <>
+                      <div className="flex items-center gap-0.5">
+                        {Array.from({ length: fullStars }).map((_, i) => (
+                          <IconStarFilled key={`full-${i}`} className="size-3 text-yellow-500" />
+                        ))}
+                        {hasHalfStar && (
+                          <IconStarHalfFilled className="size-3 text-yellow-500" />
+                        )}
+                        {Array.from({ length: emptyStars }).map((_, i) => (
+                          <IconStar key={`empty-${i}`} className="size-3 text-yellow-500 fill-yellow-500/20" />
+                        ))}
+                      </div>
+                      <span className="text-gray-500">({reviewCount})</span>
+                    </>
+                  );
+                } else {
+                  return (
+                    <>
+                      <div className="flex items-center gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <IconStar key={`empty-${i}`} className="size-3 text-gray-300" />
+                        ))}
+                      </div>
+                      <span className="text-gray-400">(0)</span>
+                    </>
+                  );
+                }
+              })()}
             </div>
           </div>
 

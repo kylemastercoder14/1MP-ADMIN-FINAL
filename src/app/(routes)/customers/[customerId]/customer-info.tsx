@@ -26,16 +26,19 @@ const CustomerInfo = ({
   const router = useRouter();
 
   const getStatusColor = (
-    status: "Pending" | "Completed" | "Cancelled" | "Awaiting Payment" | string
+    status: "Pending" | "Delivered" | "Cancelled" | "Awaiting Payment" | "Returned" | "Paid" | "Failed" | string
   ) => {
     const colors: Record<
-      "Pending" | "Completed" | "Cancelled" | "Awaiting Payment",
+      "Pending" | "Delivered" | "Cancelled" | "Awaiting Payment" | "Returned" | "Paid" | "Failed" | string,
       string
     > = {
       Pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
-      Completed: "bg-green-100 text-green-800 border-green-300",
+      Delivered: "bg-green-100 text-green-800 border-green-300",
+      Paid: "bg-green-100 text-green-800 border-green-300",
       Cancelled: "bg-red-100 text-red-800 border-red-300",
       "Awaiting Payment": "bg-orange-100 text-orange-800 border-orange-300",
+      Returned: "bg-gray-100 text-gray-800 border-gray-300",
+      Failed: "bg-red-100 text-red-800 border-red-300",
     };
     return (
       colors[status as keyof typeof colors] ||
