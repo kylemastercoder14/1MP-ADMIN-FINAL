@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ProductVariant } from "@prisma/client";
 
 type CampaignProductWithRelations = {
   id: string;
@@ -31,7 +32,7 @@ type CampaignProductWithRelations = {
     id: string;
     name: string;
     images: string[];
-    price: number;
+    price: number | null; // ✅ allow null
     vendor: {
       id: string;
       name: string | null;
@@ -47,9 +48,10 @@ type CampaignProductWithRelations = {
     } | null;
     variants: Array<{
       id: string;
-      name: string;
       price: number;
-      stock: number;
+      quantity: number;
+      sku: string | null;
+      image: string | null;
       attributes: unknown;
     }>;
   };
@@ -57,13 +59,7 @@ type CampaignProductWithRelations = {
     id: string;
     campaignStock: number;
     soldCount: number;
-    productVariant: {
-      id: string;
-      name: string;
-      price: number;
-      stock: number;
-      attributes: unknown;
-    } | null;
+    productVariant: ProductVariant | null;
   }>;
 };
 
@@ -187,12 +183,12 @@ export const columns: ColumnDef<CampaignProductWithRelations>[] = [
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Regular:</span>
-            <span className="font-medium">₱{regularPrice.toFixed(2)}</span>
+            <span className="font-medium">₱{regularPrice?.toFixed(2)}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Campaign:</span>
             <span className="font-medium text-[#800020]">
-              ₱{campaignPrice.toFixed(2)}
+              ₱{campaignPrice?.toFixed(2)}
             </span>
           </div>
           {discount > 0 && (
@@ -213,10 +209,7 @@ export const columns: ColumnDef<CampaignProductWithRelations>[] = [
       const product = row.original.product;
 
       if (variantStocks.length === 0 && product.variants.length === 0) {
-        // Product without variants
-        return (
-          <div className="text-sm text-muted-foreground">No variants</div>
-        );
+        return <div className="text-sm text-muted-foreground">No variants</div>;
       }
 
       if (variantStocks.length === 0) {
@@ -231,7 +224,8 @@ export const columns: ColumnDef<CampaignProductWithRelations>[] = [
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="variants" className="border-none">
             <AccordionTrigger className="py-1 text-sm">
-              View {variantStocks.length} variant{variantStocks.length > 1 ? "s" : ""}
+              View {variantStocks.length} variant
+              {variantStocks.length > 1 ? "s" : ""}
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2 pt-2">
@@ -244,9 +238,10 @@ export const columns: ColumnDef<CampaignProductWithRelations>[] = [
                       ? JSON.parse(variant.attributes)
                       : variant.attributes || {};
 
-                  const variantName = Object.values(attributes)
-                    .map((val) => String(val))
-                    .join(" / ") || variant.name || "Default";
+                  const variantName =
+                    Object.values(attributes)
+                      .map((val) => String(val))
+                      .join(" / ") || "Default";
 
                   return (
                     <div
@@ -254,16 +249,19 @@ export const columns: ColumnDef<CampaignProductWithRelations>[] = [
                       className="border rounded-md p-2 text-xs space-y-1"
                     >
                       <div className="font-medium truncate">{variantName}</div>
+
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-muted-foreground">
                           Campaign Stock:
                         </span>
                         <span className="font-medium">{vs.campaignStock}</span>
                       </div>
+
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-muted-foreground">Sold:</span>
                         <span className="font-medium">{vs.soldCount}</span>
                       </div>
+
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-muted-foreground">
                           Available:
@@ -272,11 +270,12 @@ export const columns: ColumnDef<CampaignProductWithRelations>[] = [
                           {vs.campaignStock - vs.soldCount}
                         </span>
                       </div>
+
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-muted-foreground">
                           Regular Stock:
                         </span>
-                        <span className="font-medium">{variant.stock}</span>
+                        <span className="font-medium">{variant.quantity}</span>
                       </div>
                     </div>
                   );
@@ -365,12 +364,7 @@ export const columns: ColumnDef<CampaignProductWithRelations>[] = [
     accessorKey: "actions",
     header: "",
     cell: ({ row }) => (
-      <CellAction
-        status={row.original.status}
-        id={row.original.id}
-      />
+      <CellAction status={row.original.status} id={row.original.id} />
     ),
   },
 ];
-
-

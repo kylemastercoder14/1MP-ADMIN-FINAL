@@ -87,10 +87,6 @@ const data = {
           title: "Campaigns",
           url: "/marketing/campaigns",
         },
-        {
-          title: "Campaign Products",
-          url: "/marketing/campaigns/products",
-        },
       ],
     },
     {

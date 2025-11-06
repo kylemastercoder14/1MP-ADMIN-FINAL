@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import { CampaignProductsTable } from "./campaign-products-table";
 import { columns } from "./campaign-products-columns";
 import TableTabs from "./campaign-products-table-tabs";
+import { ProductVariant } from '@prisma/client';
 
 type CampaignProductWithRelations = {
   id: string;
@@ -22,7 +23,7 @@ type CampaignProductWithRelations = {
     id: string;
     name: string;
     images: string[];
-    price: number;
+    price: number | null;   // ✅ allow null
     vendor: {
       id: string;
       name: string | null;
@@ -38,9 +39,10 @@ type CampaignProductWithRelations = {
     } | null;
     variants: Array<{
       id: string;
-      name: string;
       price: number;
-      stock: number;
+      quantity: number;
+      sku: string | null;
+      image: string | null;
       attributes: unknown;
     }>;
   };
@@ -48,13 +50,7 @@ type CampaignProductWithRelations = {
     id: string;
     campaignStock: number;
     soldCount: number;
-    productVariant: {
-      id: string;
-      name: string;
-      price: number;
-      stock: number;
-      attributes: unknown;
-    } | null;
+    productVariant: ProductVariant | null;
   }>;
 };
 

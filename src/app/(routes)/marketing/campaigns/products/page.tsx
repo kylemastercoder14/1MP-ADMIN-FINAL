@@ -44,15 +44,7 @@ const Page = async () => {
       },
       variantStocks: {
         include: {
-          productVariant: {
-            select: {
-              id: true,
-              name: true,
-              price: true,
-              stock: true,
-              attributes: true,
-            },
-          },
+          productVariant: true
         },
       },
     },
